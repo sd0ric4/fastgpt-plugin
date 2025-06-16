@@ -1,0 +1,24 @@
+{
+  "name": "@fastgpt-plugins/sdk",
+  "version": "0.0.1",
+  "description": "fastgpt-tools sdk",
+  "main": "dist/client.js",
+  "types": "dist/client.d.ts",
+  "scripts": {
+    "build": "bun run build.ts"
+  },
+  "keywords": [
+    "fastgpt",
+    "fastgpt-tools",
+    "sdk"
+  ],
+  "author": "fastgpt",
+  "license": "MIT",
+  "dependencies": {
+    "@ts-rest/core": "^3.52.1",
+    "zod": "^3.25.40"
+  },
+  "devDependencies": {
+    "bun-plugin-dts": "^1.1.0"
+  }
+}
