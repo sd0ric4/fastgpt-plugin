@@ -4,6 +4,8 @@ import { init } from "./utils/tools";
 import { createExpressEndpoints } from "@ts-rest/express";
 import { contract } from "./contract";
 import { generateOpenApi } from "@ts-rest/open-api";
+import swaggerUi from "swagger-ui-express";
+
 import router from "./controllers";
 
 const program = new Command();
@@ -26,16 +28,16 @@ const app = express().use(
 
 const openApiDocument = generateOpenApi(contract, {
   info: {
-    title: "Posts API",
+    title: "FastGPT-plugin API document",
     version: "1.0.0",
+    description: "FastGPT-plugin API document",
   },
 });
 
 createExpressEndpoints(contract, router, app);
 
-app.get("/openapi", (req, res) => {
-  res.json(openApiDocument);
-});
+app.use("/openapi", swaggerUi.serve);
+app.get("/openapi", swaggerUi.setup(openApiDocument));
 
 app.listen(PORT, (error?: Error) => {
   if (error) {

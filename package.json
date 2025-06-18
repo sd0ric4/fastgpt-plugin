@@ -27,7 +27,8 @@
   },
   "workspaces": [
     "tools",
-    "runtime"
+    "runtime",
+    "sdk"
   ],
   "packageManager": "bun@1.2.2",
   "dependencies": {

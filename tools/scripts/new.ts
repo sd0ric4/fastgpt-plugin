@@ -59,7 +59,8 @@ fs.writeFileSync(
 
 // output success message
 console.log(`
-Tool/Toolset created successfully! 🎉Next steps:
+Tool/Toolset created successfully! 🎉
+Next steps:
 - cd packages/${name}
 - bun i
 `);

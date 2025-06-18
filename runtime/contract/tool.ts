@@ -1,6 +1,9 @@
 import z from "zod";
 import { c } from "./init";
-import { ToolListItemSchema, ToolTypeEnum } from "../../tools/type/tool";
+import {
+  ToolListItemSchema,
+  ToolTypeEnum,
+} from "@fastgpt-plugin/tools/type/tool";
 
 export const runType = z.object({
   toolId: z.string(),
