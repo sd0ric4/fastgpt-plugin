@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
-import type z from "zod";
-import type { ToolSchema, ToolSetSchema } from "../../type/tool";
+import type { ToolType, ToolSetType } from "@fastgpt-plugin/tools/type";
 
 export async function saveFile(url: string, path: string) {
   const response = await fetch(url);
@@ -12,9 +11,6 @@ export async function saveFile(url: string, path: string) {
   fs.writeFileSync(path, Buffer.from(buffer));
   return buffer;
 }
-
-type ToolType = z.infer<typeof ToolSchema>;
-type ToolSetType = z.infer<typeof ToolSetSchema>;
 
 const tools: ToolType[] = [];
 
@@ -107,6 +103,6 @@ export function getTools() {
   return tools;
 }
 
-export async function init(prod: boolean) {
+export async function init(_prod: boolean) {
   await LoadToolsProd();
 }

@@ -1,7 +1,7 @@
 import { s } from "../init";
 import { contract } from "../../contract";
 import { getTool } from "../../utils/tools";
-import { formatToolList } from "../../../type/tool";
+import { formatToolList } from "@fastgpt-plugin/tools/type/tool";
 
 export default s.route(contract.tool.getTool, async (args) => {
   const { toolId } = args.query;

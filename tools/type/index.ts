@@ -1,6 +1,11 @@
 import { z } from "zod";
 import type { InputType, OutputType } from "./fastgpt";
-import type { ToolConfigSchema, ToolSetConfigSchema } from "./tool";
+import type {
+  ToolConfigSchema,
+  ToolSchema,
+  ToolSetConfigSchema,
+  ToolSetSchema,
+} from "./tool";
 
 const InputBaseSchema = z.object({
   version: z.string().optional(),
@@ -32,3 +37,6 @@ export function defineToolSet(toolset: ToolSetConfigType) {
 }
 
 export * from "./fastgpt";
+
+export type ToolType = z.infer<typeof ToolSchema>;
+export type ToolSetType = z.infer<typeof ToolSetSchema>;

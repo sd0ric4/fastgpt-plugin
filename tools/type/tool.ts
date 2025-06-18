@@ -37,11 +37,6 @@ export const ToolConfigSchema = z
   })
   .describe("The Tool Config Schema");
 
-export const ToolSetConfigSchema = ToolConfigSchema.omit({
-  inputs: true,
-  outputs: true,
-}).describe("The ToolSet Config Schema");
-
 export const ToolSchema = ToolConfigSchema.omit({
   toolId: true,
 }).merge(
@@ -53,6 +48,17 @@ export const ToolSchema = ToolConfigSchema.omit({
     toolFile: z.string(),
   }),
 );
+
+export const ToolSetConfigSchema = ToolConfigSchema.omit({
+  inputs: true,
+  outputs: true,
+})
+  .merge(
+    z.object({
+      children: z.array(ToolSchema).describe("The children of the tool set"),
+    }),
+  )
+  .describe("The ToolSet Config Schema");
 
 export const ToolSetSchema = ToolSetConfigSchema.merge(
   z.object({

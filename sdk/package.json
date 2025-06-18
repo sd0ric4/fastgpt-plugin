@@ -1,5 +1,5 @@
 {
-  "name": "@fastgpt-plugins/sdk",
+  "name": "@fastgpt-sdk/plugins",
   "version": "0.0.1",
   "description": "fastgpt-plugins sdk",
   "main": "dist/client.js",
@@ -19,6 +19,6 @@
     "zod": "^3.25.40"
   },
   "devDependencies": {
-    "bun-plugin-dts": "^1.1.0"
+    "bun-plugin-dts": "^0.3.0"
   }
 }
