@@ -149,7 +149,9 @@ export async function dispatch(data: Record<string, unknown>) {
   return await workerPool.run(data);
 }
 
-export async function dispatchWithNewWorker(data: { toolId: string } & object) {
+export async function dispatchWithNewWorker(
+  data: { toolId: string; input: unknown } & object,
+) {
   const { toolId } = data;
   const tool = getTool(toolId);
   if (!tool || !tool.cb) {

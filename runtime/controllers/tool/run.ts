@@ -16,9 +16,7 @@ export default s.route(contract.tool.run, async (args) => {
     const result = await dispatchWithNewWorker({ toolId, input });
     return {
       status: 200,
-      body: {
-        output: result,
-      },
+      body: contract.tool.run.responses[200].parse(result),
     };
   } catch (error) {
     return {

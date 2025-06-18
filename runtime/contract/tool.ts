@@ -21,7 +21,7 @@ export const toolContract = c.router(
       },
     },
     getTool: {
-      path: "get",
+      path: "/get",
       method: "GET",
       description: "Get a tool",
       query: z.object({
