@@ -1,5 +1,5 @@
 {
-  "name": "fastgpt-tools",
+  "name": "fastgpt-plugins",
   "module": "index.ts",
   "type": "module",
   "scripts": {
