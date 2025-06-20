@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const InfoString = z.object({
-  en: z.string().optional(),
-  "zh-CN": z.string(),
+  en: z.string(),
+  "zh-CN": z.string().optional(),
   "zh-Hant": z.string().optional(),
 });
