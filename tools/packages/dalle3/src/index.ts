@@ -18,7 +18,6 @@ export async function tool(
   props: z.infer<typeof InputType>,
 ): Promise<z.infer<typeof OutputType>> {
   const { 绘图提示词, url, authorization } = props;
-  console.log(props);
   const res = await fetch(`${url}/v1/images/generations`, {
     method: "POST",
     headers: {
@@ -34,13 +33,11 @@ export async function tool(
   });
   if (!res.ok) {
     const error = await res.text();
-    console.log(error);
     return {
       错误信息: error,
     };
   }
   const json = await res.json();
-  console.log(json);
   return {
     图片访问链接: json.data[0].url,
   };
