@@ -48,20 +48,19 @@ async function LoadToolsProd() {
     LoadTool(mod, file);
   }
   // 2. 读取 tools.json 文件中的配置（通过网络挂载）
-  const toolConfigPath = path.join(toolsDir, "tools.json");
+  const toolConfigPath = path.join(process.cwd(), "dist", "tools.json");
   if (fs.existsSync(toolConfigPath)) {
-    // const toolConfig = JSON.parse(fs.readFileSync(toolConfigPath, "utf-8")) as {
-    //   toolId: string;
-    //   url: string;
-    // }[];
+    const toolConfig = JSON.parse(fs.readFileSync(toolConfigPath, "utf-8")) as {
+      toolId: string;
+      url: string;
+    }[];
     // every string is a url to get a .js file
-    // for (const tool of toolConfig) {
-    //   await saveFile(tool.url, path.join(toolsDir, tool.toolId + ".js"));
-    //   const mod = (await import(path.join(toolsDir, tool.toolId + ".js")))
-    //     .default as ToolType;
-    //   console.log(mod);
-    //   LoadTool(mod, tool.toolId);
-    // }
+    for (const tool of toolConfig) {
+      await saveFile(tool.url, path.join(toolsDir, tool.toolId + ".js"));
+      const mod = (await import(path.join(toolsDir, tool.toolId + ".js")))
+        .default as ToolType;
+      LoadTool(mod, tool.toolId);
+    }
   }
   console.log(
     `\
@@ -74,26 +73,24 @@ amount: ${tools.length}
   );
 }
 
-// async function LoadToolsDev() {
-//   const toolsPath = path.join(process.cwd(), "..", "tools");
-//   const toolDirs = fs.readdirSync(toolsPath);
-//   console.log(toolDirs);
-//   for (const tool of toolDirs) {
-//     const toolPath = path.join(toolsPath, tool);
-//     const mod = (await import(toolPath)).default as ToolType | ToolSetType;
-//     LoadTool(mod, tool);
-//   }
-//   //   console.log(
-//   //     `\
-//   // =================
-//   // reading tools in dev mode
-//   // tools:\n[ ${tools.map((tool) => tool.toolId).join(", ")} ]
-//   // amount: ${tools.length}
-//   // =================
-//   //       `,
-//   //   );
-//   //   console.log(tools);
-// }
+async function LoadToolsDev() {
+  const toolsPath = path.join(process.cwd(), "..", "tools", "packages");
+  const toolDirs = fs.readdirSync(toolsPath);
+  for (const tool of toolDirs) {
+    const toolPath = path.join(toolsPath, tool);
+    const mod = (await import(toolPath)).default as ToolType | ToolSetType;
+    LoadTool(mod, tool);
+  }
+  console.log(
+    `\
+=================
+reading tools in dev mode
+tools:\n[ ${tools.map((tool) => tool.toolId).join(", ")} ]
+amount: ${tools.length}
+=================
+        `,
+  );
+}
 
 export function getTool(toolId: string): ToolType | undefined {
   return tools.find((tool) => tool.toolId === toolId);
@@ -103,6 +100,10 @@ export function getTools() {
   return tools;
 }
 
-export async function init(_prod: boolean) {
-  await LoadToolsProd();
+export async function init(prod: boolean) {
+  if (prod) {
+    await LoadToolsProd();
+  } else {
+    await LoadToolsDev();
+  }
 }

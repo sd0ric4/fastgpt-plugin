@@ -1,264 +1,272 @@
 export enum NodeOutputKeyEnum {
   // common
-  userChatInput = 'userChatInput',
-  history = 'history',
-  answerText = 'answerText', // node answer. the value will be show and save to history
-  reasoningText = 'reasoningText', // node reasoning. the value will be show but not save to history
-  success = 'success',
-  failed = 'failed',
-  error = 'error',
-  text = 'system_text',
-  addOutputParam = 'system_addOutputParam',
-  rawResponse = 'system_rawResponse',
+  userChatInput = "userChatInput",
+  history = "history",
+  answerText = "answerText", // node answer. the value will be show and save to history
+  reasoningText = "reasoningText", // node reasoning. the value will be show but not save to history
+  success = "success",
+  failed = "failed",
+  error = "error",
+  text = "system_text",
+  addOutputParam = "system_addOutputParam",
+  rawResponse = "system_rawResponse",
 
   // start
-  userFiles = 'userFiles',
+  userFiles = "userFiles",
 
   // dataset
-  datasetQuoteQA = 'quoteQA',
+  datasetQuoteQA = "quoteQA",
 
   // classify
-  cqResult = 'cqResult',
+  cqResult = "cqResult",
   // context extract
-  contextExtractFields = 'fields',
+  contextExtractFields = "fields",
 
   // tf switch
-  resultTrue = 'system_resultTrue',
-  resultFalse = 'system_resultFalse',
+  resultTrue = "system_resultTrue",
+  resultFalse = "system_resultFalse",
 
   // tools
-  selectedTools = 'selectedTools',
+  selectedTools = "selectedTools",
 
   // http
-  httpRawResponse = 'httpRawResponse',
+  httpRawResponse = "httpRawResponse",
 
   // plugin
-  pluginStart = 'pluginStart',
+  pluginStart = "pluginStart",
 
   // if else
-  ifElseResult = 'ifElseResult',
+  ifElseResult = "ifElseResult",
 
   //user select
-  selectResult = 'selectResult',
+  selectResult = "selectResult",
 
   // loop
-  loopArray = 'loopArray',
+  loopArray = "loopArray",
   // loop start
-  loopStartInput = 'loopStartInput',
-  loopStartIndex = 'loopStartIndex',
+  loopStartInput = "loopStartInput",
+  loopStartIndex = "loopStartIndex",
 
   // form input
-  formInputResult = 'formInputResult'
+  formInputResult = "formInputResult",
 }
 export enum NodeInputKeyEnum {
   // old
-  welcomeText = 'welcomeText',
-  switch = 'switch', // a trigger switch
-  history = 'history',
-  answerText = 'text',
+  welcomeText = "welcomeText",
+  switch = "switch", // a trigger switch
+  history = "history",
+  answerText = "text",
 
   // system config
-  questionGuide = 'questionGuide',
-  tts = 'tts',
-  whisper = 'whisper',
-  variables = 'variables',
-  scheduleTrigger = 'scheduleTrigger',
-  chatInputGuide = 'chatInputGuide',
-  autoExecute = 'autoExecute',
+  questionGuide = "questionGuide",
+  tts = "tts",
+  whisper = "whisper",
+  variables = "variables",
+  scheduleTrigger = "scheduleTrigger",
+  chatInputGuide = "chatInputGuide",
+  autoExecute = "autoExecute",
 
   // plugin config
-  instruction = 'instruction',
+  instruction = "instruction",
 
   // entry
-  userChatInput = 'userChatInput',
-  inputFiles = 'inputFiles',
+  userChatInput = "userChatInput",
+  inputFiles = "inputFiles",
 
-  agents = 'agents', // cq agent key
+  agents = "agents", // cq agent key
 
   // latest
   // common
-  aiModel = 'model',
-  aiSystemPrompt = 'systemPrompt',
-  description = 'description',
-  anyInput = 'system_anyInput',
-  textareaInput = 'system_textareaInput',
-  addInputParam = 'system_addInputParam',
-  forbidStream = 'system_forbid_stream',
+  aiModel = "model",
+  aiSystemPrompt = "systemPrompt",
+  description = "description",
+  anyInput = "system_anyInput",
+  textareaInput = "system_textareaInput",
+  addInputParam = "system_addInputParam",
+  forbidStream = "system_forbid_stream",
+  systemInputConfig = "system_input_config",
 
   // history
-  historyMaxAmount = 'maxContext',
+  historyMaxAmount = "maxContext",
 
   // ai chat
-  aiChatTemperature = 'temperature',
-  aiChatMaxToken = 'maxToken',
-  aiChatSettingModal = 'aiSettings',
-  aiChatIsResponseText = 'isResponseAnswerText',
-  aiChatQuoteRole = 'aiChatQuoteRole',
-  aiChatQuoteTemplate = 'quoteTemplate',
-  aiChatQuotePrompt = 'quotePrompt',
-  aiChatDatasetQuote = 'quoteQA',
-  aiChatVision = 'aiChatVision',
-  stringQuoteText = 'stringQuoteText',
-  aiChatReasoning = 'aiChatReasoning',
-  aiChatTopP = 'aiChatTopP',
-  aiChatStopSign = 'aiChatStopSign',
-  aiChatResponseFormat = 'aiChatResponseFormat',
-  aiChatJsonSchema = 'aiChatJsonSchema',
+  aiChatTemperature = "temperature",
+  aiChatMaxToken = "maxToken",
+  aiChatSettingModal = "aiSettings",
+  aiChatIsResponseText = "isResponseAnswerText",
+  aiChatQuoteRole = "aiChatQuoteRole",
+  aiChatQuoteTemplate = "quoteTemplate",
+  aiChatQuotePrompt = "quotePrompt",
+  aiChatDatasetQuote = "quoteQA",
+  aiChatVision = "aiChatVision",
+  stringQuoteText = "stringQuoteText",
+  aiChatReasoning = "aiChatReasoning",
+  aiChatTopP = "aiChatTopP",
+  aiChatStopSign = "aiChatStopSign",
+  aiChatResponseFormat = "aiChatResponseFormat",
+  aiChatJsonSchema = "aiChatJsonSchema",
 
   // dataset
-  datasetSelectList = 'datasets',
-  datasetSimilarity = 'similarity',
-  datasetMaxTokens = 'limit',
-  datasetSearchMode = 'searchMode',
-  datasetSearchEmbeddingWeight = 'embeddingWeight',
+  datasetSelectList = "datasets",
+  datasetSimilarity = "similarity",
+  datasetMaxTokens = "limit",
+  datasetSearchMode = "searchMode",
+  datasetSearchEmbeddingWeight = "embeddingWeight",
 
-  datasetSearchUsingReRank = 'usingReRank',
-  datasetSearchRerankWeight = 'rerankWeight',
-  datasetSearchRerankModel = 'rerankModel',
+  datasetSearchUsingReRank = "usingReRank",
+  datasetSearchRerankWeight = "rerankWeight",
+  datasetSearchRerankModel = "rerankModel",
 
-  datasetSearchUsingExtensionQuery = 'datasetSearchUsingExtensionQuery',
-  datasetSearchExtensionModel = 'datasetSearchExtensionModel',
-  datasetSearchExtensionBg = 'datasetSearchExtensionBg',
-  collectionFilterMatch = 'collectionFilterMatch',
-  authTmbId = 'authTmbId',
-  datasetDeepSearch = 'datasetDeepSearch',
-  datasetDeepSearchModel = 'datasetDeepSearchModel',
-  datasetDeepSearchMaxTimes = 'datasetDeepSearchMaxTimes',
-  datasetDeepSearchBg = 'datasetDeepSearchBg',
+  datasetSearchUsingExtensionQuery = "datasetSearchUsingExtensionQuery",
+  datasetSearchExtensionModel = "datasetSearchExtensionModel",
+  datasetSearchExtensionBg = "datasetSearchExtensionBg",
+  collectionFilterMatch = "collectionFilterMatch",
+  authTmbId = "authTmbId",
+  datasetDeepSearch = "datasetDeepSearch",
+  datasetDeepSearchModel = "datasetDeepSearchModel",
+  datasetDeepSearchMaxTimes = "datasetDeepSearchMaxTimes",
+  datasetDeepSearchBg = "datasetDeepSearchBg",
 
   // concat dataset
-  datasetQuoteList = 'system_datasetQuoteList',
+  datasetQuoteList = "system_datasetQuoteList",
 
   // context extract
-  contextExtractInput = 'content',
-  extractKeys = 'extractKeys',
+  contextExtractInput = "content",
+  extractKeys = "extractKeys",
 
   // http
-  httpReqUrl = 'system_httpReqUrl',
-  httpHeaders = 'system_httpHeader',
-  httpMethod = 'system_httpMethod',
-  httpParams = 'system_httpParams',
-  httpJsonBody = 'system_httpJsonBody',
-  httpFormBody = 'system_httpFormBody',
-  httpContentType = 'system_httpContentType',
-  httpTimeout = 'system_httpTimeout',
-  abandon_httpUrl = 'url',
+  httpReqUrl = "system_httpReqUrl",
+  httpHeaders = "system_httpHeader",
+  httpMethod = "system_httpMethod",
+  httpParams = "system_httpParams",
+  httpJsonBody = "system_httpJsonBody",
+  httpFormBody = "system_httpFormBody",
+  httpContentType = "system_httpContentType",
+  httpTimeout = "system_httpTimeout",
+  abandon_httpUrl = "url",
 
   // app
-  runAppSelectApp = 'app',
+  runAppSelectApp = "app",
 
   // plugin
-  pluginId = 'pluginId',
-  pluginStart = 'pluginStart',
+  pluginId = "pluginId",
+  pluginStart = "pluginStart",
 
   // if else
-  condition = 'condition',
-  ifElseList = 'ifElseList',
+  condition = "condition",
+  ifElseList = "ifElseList",
 
   // variable update
-  updateList = 'updateList',
+  updateList = "updateList",
 
   // code
-  code = 'code',
-  codeType = 'codeType', // js|py
+  code = "code",
+  codeType = "codeType", // js|py
 
   // read files
-  fileUrlList = 'fileUrlList',
+  fileUrlList = "fileUrlList",
 
   // user select
-  userSelectOptions = 'userSelectOptions',
+  userSelectOptions = "userSelectOptions",
 
   // loop
-  loopInputArray = 'loopInputArray',
-  childrenNodeIdList = 'childrenNodeIdList',
-  nodeWidth = 'nodeWidth',
-  nodeHeight = 'nodeHeight',
-  loopNodeInputHeight = 'loopNodeInputHeight',
+  loopInputArray = "loopInputArray",
+  childrenNodeIdList = "childrenNodeIdList",
+  nodeWidth = "nodeWidth",
+  nodeHeight = "nodeHeight",
+  loopNodeInputHeight = "loopNodeInputHeight",
   // loop start
-  loopStartInput = 'loopStartInput',
-  loopStartIndex = 'loopStartIndex',
+  loopStartInput = "loopStartInput",
+  loopStartIndex = "loopStartIndex",
   // loop end
-  loopEndInput = 'loopEndInput',
+  loopEndInput = "loopEndInput",
 
   // form input
-  userInputForms = 'userInputForms',
+  userInputForms = "userInputForms",
 
   // comment
-  commentText = 'commentText',
-  commentSize = 'commentSize'
+  commentText = "commentText",
+  commentSize = "commentSize",
 }
 
 export enum FlowNodeInputTypeEnum { // render ui
-  reference = 'reference', // reference to other node output
-  input = 'input', // one line input
-  textarea = 'textarea',
-  numberInput = 'numberInput',
-  switch = 'switch', // true/false
-  select = 'select',
-  multipleSelect = 'multipleSelect',
+  reference = "reference", // reference to other node output
+  input = "input", // one line input
+  textarea = "textarea",
+  numberInput = "numberInput",
+  switch = "switch", // true/false
+  select = "select",
+  multipleSelect = "multipleSelect",
 
   // editor
-  JSONEditor = 'JSONEditor',
+  JSONEditor = "JSONEditor",
 
-  addInputParam = 'addInputParam', // params input
+  addInputParam = "addInputParam", // params input
 
   // special input
-  selectApp = 'selectApp',
-  customVariable = 'customVariable',
+  selectApp = "selectApp",
+  customVariable = "customVariable",
 
   // ai model select
-  selectLLMModel = 'selectLLMModel',
-  settingLLMModel = 'settingLLMModel',
+  selectLLMModel = "selectLLMModel",
+  settingLLMModel = "settingLLMModel",
 
   // dataset special input
-  selectDataset = 'selectDataset',
-  selectDatasetParamsModal = 'selectDatasetParamsModal',
-  settingDatasetQuotePrompt = 'settingDatasetQuotePrompt',
+  selectDataset = "selectDataset",
+  selectDatasetParamsModal = "selectDatasetParamsModal",
+  settingDatasetQuotePrompt = "settingDatasetQuotePrompt",
 
-  hidden = 'hidden',
-  custom = 'custom',
+  hidden = "hidden",
+  custom = "custom",
 
-  fileSelect = 'fileSelect'
+  fileSelect = "fileSelect",
 }
 
 export enum WorkflowIOValueTypeEnum {
-  string = 'string',
-  number = 'number',
-  boolean = 'boolean',
-  object = 'object',
+  string = "string",
+  number = "number",
+  boolean = "boolean",
+  object = "object",
 
-  arrayString = 'arrayString',
-  arrayNumber = 'arrayNumber',
-  arrayBoolean = 'arrayBoolean',
-  arrayObject = 'arrayObject',
-  arrayAny = 'arrayAny',
-  any = 'any',
+  arrayString = "arrayString",
+  arrayNumber = "arrayNumber",
+  arrayBoolean = "arrayBoolean",
+  arrayObject = "arrayObject",
+  arrayAny = "arrayAny",
+  any = "any",
 
-  chatHistory = 'chatHistory',
-  datasetQuote = 'datasetQuote',
+  chatHistory = "chatHistory",
+  datasetQuote = "datasetQuote",
 
-  dynamic = 'dynamic',
+  dynamic = "dynamic",
 
   // plugin special type
-  selectDataset = 'selectDataset',
+  selectDataset = "selectDataset",
 
   // abandon
-  selectApp = 'selectApp'
+  selectApp = "selectApp",
 }
 
 export enum LLMModelTypeEnum {
-  all = 'all',
-  classify = 'classify',
-  extractFields = 'extractFields',
-  toolCall = 'toolCall'
+  all = "all",
+  classify = "classify",
+  extractFields = "extractFields",
+  toolCall = "toolCall",
 }
 
 export enum FlowNodeOutputTypeEnum {
-  hidden = 'hidden',
-  source = 'source',
-  static = 'static',
-  dynamic = 'dynamic'
+  hidden = "hidden",
+  source = "source",
+  static = "static",
+  dynamic = "dynamic",
 }
+
+export type InputConfigType = Omit<
+  InputType,
+  "renderTypeList" | "inputList"
+> & {
+  inputType: "string" | "secret";
+};
 
 export type InputType = {
   referencePlaceholder?: string;
@@ -272,7 +280,7 @@ export type InputType = {
   max?: number; // slider, number input
   min?: number; // slider, number input
 
-  defaultValue?: string;
+  defaultValue?: any;
 
   llmModelType?: `${LLMModelTypeEnum}`;
 
@@ -302,6 +310,8 @@ export type InputType = {
   canSelectFile?: boolean;
   canSelectImg?: boolean;
   maxFiles?: number;
+
+  inputList?: InputConfigType[];
 };
 
 export type OutputType = {
@@ -324,5 +334,3 @@ export type CustomFieldConfigType = {
   showDefaultValue?: boolean;
   showDescription?: boolean;
 };
-
-export * from './fastgpt';

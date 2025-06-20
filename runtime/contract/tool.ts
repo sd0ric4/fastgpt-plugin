@@ -4,6 +4,7 @@ import {
   ToolListItemSchema,
   ToolTypeEnum,
 } from "@fastgpt-plugin/tools/type/tool";
+import type { InputType } from "../../tools/type";
 
 export const runType = z.object({
   toolId: z.string(),
@@ -44,7 +45,14 @@ export const toolContract = c.router(
         parentId: z.string().optional(),
       }),
       responses: {
-        200: z.array(ToolListItemSchema),
+        // 200: z.array(ToolListItemSchema),
+        200: c.type<
+          Array<
+            Omit<z.infer<typeof ToolListItemSchema>, "inputs"> & {
+              inputs: InputType[];
+            }
+          >
+        >(),
       },
     },
   },

@@ -44,5 +44,7 @@ app.listen(PORT, (error?: Error) => {
     console.error(error);
     process.exit(1);
   }
-  console.log(`FastGPT Tool Service is listening at http://localhost:${PORT}`);
+  console.log(
+    `FastGPT Plugin Service is listening at http://localhost:${PORT}`,
+  );
 });

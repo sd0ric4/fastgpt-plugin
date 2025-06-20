@@ -1,8 +1,2 @@
-import { contract } from "../runtime/contract";
-import { initClient } from "@ts-rest/core";
-
-export default function createClient({ baseUrl }: { baseUrl: string }) {
-  return initClient(contract, {
-    baseUrl,
-  });
-}
+import createClient from "../runtime/contract/client";
+export default createClient;

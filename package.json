@@ -3,12 +3,12 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "new": "bun run scripts/new.ts",
     "build": "bun run scripts/build.ts",
     "dev": "bun --cwd=./runtime run dev",
     "start": "bun --cwd=./runtime run start",
     "lint": "bun eslint --fix",
-    "test": "vitest"
+    "test": "vitest",
+    "new:tool": "bun --cwd=./tools run new"
   },
   "devDependencies": {
     "@eslint/js": "^9.24.0",
@@ -28,7 +28,8 @@
   "workspaces": [
     "tools",
     "runtime",
-    "sdk"
+    "sdk",
+    "tools/packages/**/*"
   ],
   "packageManager": "bun@1.2.2",
   "dependencies": {

@@ -28,6 +28,7 @@ export const ToolConfigSchema = z
     icon: z.string().describe("The icon of the tool"),
     author: z.string().optional().describe("The author of the tool"),
     docURL: z.string().optional().describe("The documentation URL of the tool"),
+    isActive: z.boolean().optional().describe("Whether it is active"),
     versionList: z
       .array(VersionListItemSchema)
       .min(1)
@@ -114,7 +115,7 @@ export function formatToolList(
     intro: item.description,
     templateType: item.type,
     pluginOrder: index,
-    isActive: true,
+    isActive: item.isActive ?? true,
     weight: index,
     originCost: 0,
     currentCost: 0,
