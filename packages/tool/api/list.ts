@@ -1,20 +1,20 @@
 import { s } from '@/router/init';
 import { contract } from '@/contract';
-import { formatToolList } from '@tool/type/tool';
 import { tools } from '@tool/constants';
 import { c } from '@/contract/init';
 import { z } from 'zod';
-import { ToolListItemSchema } from '@tool/type/tool';
-import type { InputType } from '@tool/type';
+import type { InputType } from '@tool/type/fastgpt';
+import { formatToolList } from '@tool/utils/tool';
+import type { ToolListItemType } from '@tool/type/tool';
 
 export const listToolContract = {
   path: '/list',
   method: 'GET',
   description: 'Get tools list',
   responses: {
-    200: c.type<
+    '200': c.type<
       Array<
-        Omit<z.infer<typeof ToolListItemSchema>, 'inputs'> & {
+        Omit<ToolListItemType, 'inputs'> & {
           inputs: InputType[];
         }
       >

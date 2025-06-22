@@ -1,8 +1,9 @@
 import { z } from 'zod';
 import { s } from '@/router/init';
 import { contract } from '@/contract';
-import { formatToolList, ToolListItemSchema } from '@tool/type/tool';
+import { ToolListItemSchema } from '@tool/type/tool';
 import { getTool } from '@tool/controller';
+import { formatToolList } from '@tool/utils/tool';
 
 export const getToolContract = {
   path: '/get',
@@ -12,7 +13,7 @@ export const getToolContract = {
     toolId: z.string()
   }),
   responses: {
-    200: ToolListItemSchema
+    '200': ToolListItemSchema
   }
 } as const;
 

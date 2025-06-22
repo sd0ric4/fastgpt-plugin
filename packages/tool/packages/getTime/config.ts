@@ -1,11 +1,12 @@
-import { defineTool, FlowNodeOutputTypeEnum, WorkflowIOValueTypeEnum } from '@tool/type';
+import { defineTool } from '@tool/type';
+import { FlowNodeOutputTypeEnum, WorkflowIOValueTypeEnum } from '@tool/type/fastgpt';
 
 export default defineTool({
   toolId: 'community-getTime',
   versionList: [
     {
       version: '1.0',
-      description: '初始版本'
+      description: 'Default version'
     }
   ],
   type: 'tools',

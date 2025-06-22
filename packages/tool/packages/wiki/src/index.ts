@@ -1,14 +1,11 @@
-import { defineInputSchema } from '@tool/type';
 import { z } from 'zod';
 import wiki from 'wikijs';
 import { getErrText } from '@tool/utils/err';
 import { delay } from '@tool/utils/delay';
 
-export const InputType = defineInputSchema(
-  z.object({
-    query: z.string()
-  })
-);
+export const InputType = z.object({
+  query: z.string()
+});
 
 export const OutputType = z.object({
   result: z.string()
@@ -20,9 +17,8 @@ const func = async (
   const { query } = props;
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const wikiInstance = wiki({ apiUrl: 'https://zh.wikipedia.org/w/api.php' }) as any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const searchResults = await wikiInstance.page(query).then((page: any) => {
       return page.summary();
     });

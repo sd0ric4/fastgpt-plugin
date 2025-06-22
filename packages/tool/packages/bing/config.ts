@@ -1,9 +1,9 @@
+import { defineTool } from '@tool/type';
 import {
-  defineTool,
   FlowNodeInputTypeEnum,
   FlowNodeOutputTypeEnum,
   WorkflowIOValueTypeEnum
-} from '@tool/type';
+} from '@tool/type/fastgpt';
 
 export default defineTool({
   toolId: 'community-bing',
@@ -11,8 +11,8 @@ export default defineTool({
   docURL: 'https://fael3z0zfze.feishu.cn/wiki/LsKAwOmtniA4vkkC259cmfxXnAc?fromScene=spaceOverview',
   versionList: [
     {
-      version: '1.0.0',
-      description: '初始版本'
+      version: '0.1.0',
+      description: 'Default version'
     }
   ],
   type: 'search',
