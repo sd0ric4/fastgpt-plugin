@@ -22,7 +22,7 @@ export default defineTool({
   inputs: [
     {
       valueType: 'string',
-      key: '钉钉机器人地址',
+      key: 'webhookUrl',
       label: '钉钉机器人地址',
       description: '',
       defaultValue: '',
@@ -34,7 +34,7 @@ export default defineTool({
       renderTypeList: ['input', 'reference'],
       selectedTypeIndex: 0,
       valueType: 'string',
-      key: '加签值',
+      key: 'secret',
       label: '加签值',
       description: '钉钉机器人加签值',
       defaultValue: '',
@@ -53,7 +53,7 @@ export default defineTool({
       renderTypeList: ['input', 'reference'],
       selectedTypeIndex: 0,
       valueType: 'string',
-      key: '发送的消息',
+      key: 'message',
       label: '发送的消息',
       description: '发送的消息',
       defaultValue: '',
@@ -73,7 +73,7 @@ export default defineTool({
   outputs: [
     {
       id: 'mv52BrPVE6bm',
-      key: '钉钉机器人地址',
+      key: 'webhookUrl',
       valueType: 'string',
       label: '钉钉机器人地址',
       type: 'static'
@@ -81,14 +81,14 @@ export default defineTool({
     {
       id: 'srcret',
       valueType: 'string',
-      key: '加签值',
+      key: 'secret',
       label: '加签值',
       type: 'hidden'
     },
     {
       id: '发送的消息',
       valueType: 'string',
-      key: '发送的消息',
+      key: 'message',
       label: '发送的消息',
       type: 'hidden'
     }
