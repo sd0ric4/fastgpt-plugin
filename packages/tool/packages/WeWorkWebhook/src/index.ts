@@ -16,28 +16,19 @@ export const InputType = z
     }
   )
   .transform((data) => ({
-    webhookUrl: data.webhookUrl || data.企微机器人地址,
-    message: data.message || data.发送的消息
+    webhookUrl: (data.webhookUrl || data.企微机器人地址)!,
+    message: (data.message || data.发送的消息)!
   }));
 
-export const OutputType = z.object({
-  企微机器人地址: z.string().optional(), // 兼容旧版
-  webhookUrl: z.string().optional(),
-  发送的消息: z.string().optional(), // 兼容旧版
-  message: z.string().optional(),
-  error: z.string().optional()
-});
+export const OutputType = z.object({});
 
 export async function tool({
   webhookUrl,
   message
 }: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
-  const url = new URL(webhookUrl!);
+  const url = new URL(webhookUrl);
   const res = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
     body: JSON.stringify({
       msgtype: 'text',
       text: {
@@ -46,19 +37,9 @@ export async function tool({
     })
   });
   if (res.status !== 200) {
-    const error = await res.text();
     return {
-      企微机器人地址: webhookUrl, // 兼容旧版
-      webhookUrl: webhookUrl,
-      发送的消息: message, // 兼容旧版
-      message: message,
-      error: error
+      error: await res.text()
     };
   }
-  return {
-    企微机器人地址: webhookUrl, // 兼容旧版
-    webhookUrl: webhookUrl,
-    发送的消息: message, // 兼容旧版
-    message: message
-  };
+  return {};
 }
