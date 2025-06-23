@@ -28,7 +28,8 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["./src/*"],
-      "@tool/*": ["./packages/tool/*"]
+      "@tool/*": ["./packages/tool/*"],
+      "@mcp_server/*": ["./packages/mcp_server/*"]
     }
   }
 }

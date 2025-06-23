@@ -27,6 +27,7 @@ export const runToolHandler = () =>
   s.route(contract.tool.run, async (args) => {
     const { toolId, inputs, systemVar } = args.body;
     const tool = getTool(toolId);
+    console.log('run tool', toolId, inputs, systemVar);
 
     if (!tool) {
       return {
