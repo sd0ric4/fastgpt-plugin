@@ -23,7 +23,8 @@ type Option = {
   series: SeriesData[]; // 使用定义的类型
 };
 export const OutputType = z.object({
-  '图表 url': z.string()
+  '图表 url': z.string().optional(), // 兼容旧版
+  chartUrl: z.string().optional()
 });
 
 const generateChart = async (
@@ -109,6 +110,7 @@ export async function tool({
     chartType
   );
   return {
-    '图表 url': base64
+    '图表 url': base64, // 兼容旧版
+    chartUrl: base64
   };
 }
