@@ -46,9 +46,7 @@ export const InputType = z
     message: data.message || data.发送的消息
   }));
 
-
 export const OutputType = z.object({});
-
 
 export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
   const { webhookUrl, secret, message } = props;
@@ -69,7 +67,6 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
       }
     })
   });
-
 
   return {};
 }
