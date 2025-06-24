@@ -2,6 +2,7 @@ import { Worker } from 'worker_threads';
 import { getTool } from '@tool/controller';
 import { ToolCallbackReturnSchema } from '../../packages/tool/type/tool';
 import { z } from 'zod';
+import { addLog } from '@/utils/log';
 
 type WorkerQueueItem = {
   id: string;
@@ -187,8 +188,9 @@ export async function dispatchWithNewWorker(data: {
             resolve(data);
           } else if (type === 'error') {
             reject(data);
+          } else if (type === 'log') {
+            console.log(...(data as any));
           }
-
           worker.terminate();
         }
       );
