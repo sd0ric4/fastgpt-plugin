@@ -26,13 +26,13 @@ export default defineTool({
   icon: 'plugins/qiwei',
   inputs: [
     {
-      key: '企微机器人地址',
+      key: 'webhookUrl',
       label: '企微机器人地址',
       renderTypeList: [FlowNodeInputTypeEnum.input, FlowNodeInputTypeEnum.reference],
       valueType: WorkflowIOValueTypeEnum.string
     },
     {
-      key: '发送的消息',
+      key: 'message',
       label: '发送的消息',
       renderTypeList: [FlowNodeInputTypeEnum.input, FlowNodeInputTypeEnum.reference],
       valueType: WorkflowIOValueTypeEnum.string

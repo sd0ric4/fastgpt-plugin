@@ -1,10 +1,22 @@
 import { z } from 'zod';
 import { Parser } from 'expr-eval';
 
-export const InputType = z.object({
-  数学表达式: z.string().optional(),
-  expr: z.string().optional()
-});
+export const InputType = z
+  .object({
+    数学表达式: z.string().optional(),
+    expr: z.string().optional()
+  })
+  .refine(
+    (data) => {
+      return data.数学表达式 || data.expr;
+    },
+    {
+      message: '必须传入 "数学表达式" 或 "expr" 中的一个'
+    }
+  )
+  .transform((data) => ({
+    expr: data.expr || data.数学表达式
+  }));
 
 export const OutputType = z.object({
   result: z.string()
@@ -17,10 +29,9 @@ const replaceSpecialChar = (expr: string) => {
 };
 
 export async function tool({
-  数学表达式: formatExpr,
   expr
 }: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
-  const parseExpr = formatExpr || expr;
+  const parseExpr = expr;
 
   if (typeof parseExpr !== 'string') {
     return Promise.reject('Expr is not a string');

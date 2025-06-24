@@ -51,7 +51,7 @@ export default defineTool({
       }
     },
     {
-      key: '绘图提示词',
+      key: 'prompt',
       label: '绘图提示词',
       valueType: WorkflowIOValueTypeEnum.string,
       renderTypeList: [FlowNodeInputTypeEnum.input, FlowNodeInputTypeEnum.reference],
@@ -63,7 +63,7 @@ export default defineTool({
       id: 'link',
       type: FlowNodeOutputTypeEnum.static,
       valueType: WorkflowIOValueTypeEnum.string,
-      key: '图片访问链接',
+      key: 'link',
       label: '图片访问链接',
       description: '图片访问链接'
     },
@@ -71,7 +71,7 @@ export default defineTool({
       id: 'error',
       type: FlowNodeOutputTypeEnum.static,
       valueType: WorkflowIOValueTypeEnum.string,
-      key: '错误信息',
+      key: 'error',
       label: '错误信息',
       description: '错误信息'
     }

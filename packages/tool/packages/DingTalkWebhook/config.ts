@@ -23,7 +23,7 @@ export default defineTool({
   inputs: [
     {
       valueType: WorkflowIOValueTypeEnum.string,
-      key: '钉钉机器人地址',
+      key: 'webhookUrl',
       label: '钉钉机器人地址',
       description: '',
       defaultValue: '',
@@ -35,7 +35,7 @@ export default defineTool({
       renderTypeList: [FlowNodeInputTypeEnum.input, FlowNodeInputTypeEnum.reference],
       selectedTypeIndex: 0,
       valueType: WorkflowIOValueTypeEnum.string,
-      key: '加签值',
+      key: 'secret',
       label: '加签值',
       description: '钉钉机器人加签值',
       defaultValue: '',
@@ -54,7 +54,8 @@ export default defineTool({
       renderTypeList: [FlowNodeInputTypeEnum.input, FlowNodeInputTypeEnum.reference],
       selectedTypeIndex: 0,
       valueType: WorkflowIOValueTypeEnum.string,
-      key: '发送的消息',
+      key: 'message',
+
       label: '发送的消息',
       description: '发送的消息',
       defaultValue: '',

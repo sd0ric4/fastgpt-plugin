@@ -100,7 +100,7 @@ export default defineTool({
       description: '可用使用markdown格式展示图片，如：![图片](url)',
       defaultValue: '',
       label: '图表 url',
-      key: '图表 url'
+      key: 'chartUrl'
     }
   ]
 });

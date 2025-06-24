@@ -11,11 +11,11 @@ export default defineConfig({
       enabled: true,
       reportOnFailure: true,
       cleanOnRerun: false,
-      include: ['runtime/**/*.ts', 'tools/**/*.ts'],
+      include: ['runtime/**/*.ts', 'packages/**/*.ts'],
       exclude: ['**/node_modules/**', '**/dist/**']
     },
     reporters: ['github-actions', 'default'],
-    include: ['runtime/**/*.test.ts', 'tools/**/*.test.ts'],
+    include: ['runtime/**/*.test.ts', 'packages/**/*.test.ts'],
     exclude: ['**/node_modules/**', '**/dist/**']
   },
   resolve: {
