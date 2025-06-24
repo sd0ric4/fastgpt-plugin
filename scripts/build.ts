@@ -26,7 +26,6 @@ async function moveTool(tool: string) {
 
 await Promise.all(tools.map((tool) => moveTool(tool)));
 
-// 统一复制所有工具的图标
 const publicImgsDir = path.join(__dirname, '..', 'dist', 'public', 'imgs', 'tools');
 const copiedCount = await copyToolIcons({
   toolsDir,
