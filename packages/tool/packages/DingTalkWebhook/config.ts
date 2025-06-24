@@ -22,7 +22,7 @@ export default defineTool({
   courseUrl: 'https://open.dingtalk.com/document/robots/custom-robot-access',
   inputs: [
     {
-      valueType: 'string',
+      valueType: WorkflowIOValueTypeEnum.string,
       key: 'webhookUrl',
       label: '钉钉机器人地址',
       description: '',
@@ -34,7 +34,7 @@ export default defineTool({
     {
       renderTypeList: [FlowNodeInputTypeEnum.input, FlowNodeInputTypeEnum.reference],
       selectedTypeIndex: 0,
-      valueType: 'string',
+      valueType: WorkflowIOValueTypeEnum.string,
       key: 'secret',
       label: '加签值',
       description: '钉钉机器人加签值',
@@ -53,7 +53,7 @@ export default defineTool({
     {
       renderTypeList: [FlowNodeInputTypeEnum.input, FlowNodeInputTypeEnum.reference],
       selectedTypeIndex: 0,
-      valueType: 'string',
+      valueType: WorkflowIOValueTypeEnum.string,
       key: 'message',
 
       label: '发送的消息',
