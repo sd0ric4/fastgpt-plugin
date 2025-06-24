@@ -70,27 +70,5 @@ export default defineTool({
       toolDescription: '发送的消息'
     }
   ],
-  outputs: [
-    {
-      id: 'mv52BrPVE6bm',
-      key: 'webhookUrl',
-      valueType: 'string',
-      label: '钉钉机器人地址',
-      type: 'static'
-    },
-    {
-      id: 'srcret',
-      valueType: 'string',
-      key: 'secret',
-      label: '加签值',
-      type: 'hidden'
-    },
-    {
-      id: '发送的消息',
-      valueType: 'string',
-      key: 'message',
-      label: '发送的消息',
-      type: 'hidden'
-    }
-  ]
+  outputs: []
 });
