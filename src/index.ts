@@ -3,6 +3,7 @@ import { initOpenAPI } from './contract/openapi';
 import { initRouter } from './router';
 import { initTool } from '@tool/init';
 import { addLog } from './utils/log';
+import { isProd } from './constants';
 
 const app = express().use(
   express.json(),
