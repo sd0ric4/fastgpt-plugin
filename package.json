@@ -5,8 +5,8 @@
   "scripts": {
     "prepare": "husky install",
     "build-main": "bun build --outfile=dist/index.js --target=node --minify ./src/index.ts && cp ./src/worker/worker.js dist/worker.js",
-    "build": "bun ./scripts/build.ts",
-    "start": "bun ./dist/index.js -p",
+    "build": "NODE_ENV=production bun ./scripts/build.ts",
+    "start": "node ./dist/index.js",
     "dev": "bun run --watch src/index.ts -p",
     "test": "vitest",
     "lint": "bun eslint --fix",

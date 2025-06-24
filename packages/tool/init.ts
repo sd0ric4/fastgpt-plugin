@@ -13,14 +13,37 @@ const saveFile = async (url: string, path: string) => {
   fs.writeFileSync(path, Buffer.from(buffer));
   return buffer;
 };
+const findToolImg = (toolId: string): string => {
+  const fs = require('fs');
+  const path = require('path');
+  const iconExtensions = ['.svg', '.png', '.jpg', '.ico'];
 
+  // 获取 public/imgs 目录的路径
+  const publicImgsDir = path.join(process.cwd(), 'public', 'imgs', 'tools');
+
+  // 检查每个扩展名对应的文件是否存在
+  for (const ext of iconExtensions) {
+    const iconFileName = `${toolId}${ext}`;
+    const fullIconPath = path.join(publicImgsDir, iconFileName);
+
+    if (fs.existsSync(fullIconPath)) {
+      return `/imgs/tools/${iconFileName}`;
+    }
+  }
+
+  // 如果没有找到对应的图标文件，返回默认图标
+  return '/imgs/logo.svg';
+};
 const LoadTool = (mod: ToolType | ToolSetType, filename: string) => {
   const defaultToolId = filename.split('.').shift() as string;
+  const defaultToolImg = findToolImg(defaultToolId);
   const toolId = mod.toolId || defaultToolId;
+  const toolImg = mod.icon || defaultToolImg;
   if (!mod.isToolSet) {
     tools.push({
       ...mod,
       toolId,
+      icon: toolImg,
       toolFile: filename
     } as ToolType);
   } else {

@@ -25,7 +25,7 @@ export const ToolConfigSchema = z
     name: InfoString.describe('The name of the tool'),
     description: InfoString.describe('The description of the tool'),
     type: ToolTypeEnum.describe('The type of the tool'),
-    icon: z.string().describe('The icon of the tool'),
+    icon: z.string().optional().describe('The icon of the tool'),
     author: z.string().optional().describe('The author of the tool'),
     courseUrl: z.string().optional().describe('The documentation URL of the tool'),
     isActive: z.boolean().optional().describe('Whether it is active'),
@@ -36,14 +36,16 @@ export const ToolConfigSchema = z
   .describe('The Tool Config Schema');
 
 export const ToolSchema = ToolConfigSchema.omit({
-  toolId: true
+  toolId: true,
+  icon: true
 }).merge(
   z.object({
     toolId: z.string().describe('The unique id of the tool'),
+    icon: z.string().describe('The icon of the tool'),
     cb: ToolCallbackType.describe('The callback function of the tool'),
     isToolSet: z.boolean().optional().describe('Whether it is a tool set'),
     parentId: z.string().optional().describe('The parent id of the tool'),
-    toolFile: z.string()
+    toolFile: z.string().optional()
   })
 );
 

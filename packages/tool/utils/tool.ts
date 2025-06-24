@@ -25,20 +25,18 @@ export const exportTool = ({
     }
   };
 
-  config.toolId = config.toolId ?? __dirname.split('/').pop()?.split('.').shift();
-
   const tool: ToolType = {
     ...config,
     toolId: config.toolId as string,
+    icon: config.icon as string,
     isToolSet: false,
-    toolFile: __dirname,
+
     cb
   };
   return tool;
 };
 
 export const exportToolSet = ({ config }: { config: ToolSetConfigType }) => {
-  config.toolId = config.toolId ?? __dirname.split('/').pop()?.split('.').shift();
   config.children.forEach((child) => {
     child.toolId = config.toolId + '/' + child.toolId;
     child.parentId = config.toolId;
