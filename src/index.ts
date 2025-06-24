@@ -3,11 +3,12 @@ import { initOpenAPI } from './contract/openapi';
 import { initRouter } from './router';
 import { initTool } from '@tool/init';
 import { addLog } from './utils/log';
+import { isProd } from './constants';
 
 const app = express().use(
   express.json(),
   express.urlencoded({ extended: true }),
-  express.static('public', {})
+  express.static('public', { maxAge: isProd ? '1d' : '0', etag: true, lastModified: true })
 );
 
 initOpenAPI(app);

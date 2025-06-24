@@ -2,6 +2,7 @@ import path from 'path';
 import { isProd } from '@/constants';
 import type { ToolType, ToolSetType } from './type';
 import { tools } from './constants';
+import { findToolIcon } from './utils/icon';
 import fs from 'fs';
 import { addLog } from '@/utils/log';
 
@@ -17,11 +18,14 @@ const saveFile = async (url: string, path: string) => {
 
 const LoadTool = (mod: ToolType | ToolSetType, filename: string) => {
   const defaultToolId = filename.split('.').shift() as string;
+  const defaultToolImg = findToolIcon(defaultToolId);
   const toolId = mod.toolId || defaultToolId;
+  const toolImg = mod.icon || defaultToolImg;
   if (!mod.isToolSet) {
     tools.push({
       ...mod,
       toolId,
+      icon: toolImg,
       toolFile: filename
     } as ToolType);
   } else {
