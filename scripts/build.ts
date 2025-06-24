@@ -1,10 +1,16 @@
+import { addLog } from '@/utils/log';
 import { $ } from 'bun';
 import fs from 'fs';
 import path from 'path';
 import { copyToolIcons } from '../packages/tool/utils/icon';
 
 // main build
-await $`bun --cwd=${__dirname} run build-main`.quiet();
+
+await $`bun run build:main`.quiet();
+addLog.info('Main Build complete');
+await $`bun run build:worker`.quiet();
+addLog.info('Worker Build complete');
+
 
 // Build tools
 const toolsDir = path.join(__dirname, '..', 'packages', 'tool', 'packages');
@@ -26,6 +32,7 @@ async function moveTool(tool: string) {
 
 await Promise.all(tools.map((tool) => moveTool(tool)));
 
+
 // 统一复制所有工具的图标
 const publicImgsDir = path.join(__dirname, '..', 'dist', 'public', 'imgs', 'tools');
 const copiedCount = await copyToolIcons({
@@ -35,4 +42,4 @@ const copiedCount = await copyToolIcons({
   logPrefix: 'Copied build icon'
 });
 
-console.log(`Tools Build complete, total files: ${tools.length}, icons copied: ${copiedCount}`);
+addLog.info(`Tools Build complete, total files: ${tools.length}, icons copied: ${copiedCount}`);
