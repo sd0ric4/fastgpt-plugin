@@ -1,6 +1,7 @@
 import { $ } from 'bun';
 import fs from 'fs';
 import path from 'path';
+import { copyToolIcons } from '../packages/tool/utils/icon';
 
 // main build
 await $`bun --cwd=${__dirname} run build-main`.quiet();
@@ -21,28 +22,17 @@ async function moveTool(tool: string) {
   }
 
   fs.cpSync(src, targetFile);
-
-  // 处理图标文件 - 复制到 public/imgs
-  const publicImgsDir = path.join(__dirname, '..', 'dist', 'public', 'imgs', 'tools');
-  if (!fs.existsSync(publicImgsDir)) {
-    fs.mkdirSync(publicImgsDir, { recursive: true });
-  }
-
-  const iconExtensions = ['.svg', '.png', '.jpg', '.ico'];
-  const iconNames = ['icon', 'logo'];
-
-  for (const iconName of iconNames) {
-    for (const ext of iconExtensions) {
-      const iconPath = path.join(toolDir, `${iconName}${ext}`);
-      if (fs.existsSync(iconPath)) {
-        const iconTarget = path.join(publicImgsDir, `${tool}${ext}`);
-        fs.cpSync(iconPath, iconTarget);
-        console.log(`📦 Copied icon: /imgs/tools/${tool}${ext}`);
-        break; // 只复制第一个找到的图标
-      }
-    }
-  }
 }
+
 await Promise.all(tools.map((tool) => moveTool(tool)));
 
-console.log(`Tools Build complete, total files: ${tools.length}`);
+// 统一复制所有工具的图标
+const publicImgsDir = path.join(__dirname, '..', 'dist', 'public', 'imgs', 'tools');
+const copiedCount = await copyToolIcons({
+  toolsDir,
+  targetDir: publicImgsDir,
+  tools,
+  logPrefix: 'Copied build icon'
+});
+
+console.log(`Tools Build complete, total files: ${tools.length}, icons copied: ${copiedCount}`);
