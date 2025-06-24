@@ -46,14 +46,9 @@ export const InputType = z
     message: data.message || data.发送的消息
   }));
 
-export const OutputType = z.object({
-  钉钉机器人地址: z.string().optional(), // 兼容旧版
-  webhookUrl: z.string().optional(),
-  加签值: z.string().optional(), // 兼容旧版
-  secret: z.string().optional(),
-  发送的消息: z.string().optional(), // 兼容旧版
-  message: z.string().optional()
-});
+
+export const OutputType = z.object({});
+
 
 export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
   const { webhookUrl, secret, message } = props;
@@ -75,12 +70,6 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     })
   });
 
-  return {
-    钉钉机器人地址: webhookUrl, // 兼容旧版
-    webhookUrl: webhookUrl,
-    加签值: secret, // 兼容旧版
-    secret: secret,
-    发送的消息: message, // 兼容旧版
-    message: message
-  };
+
+  return {};
 }

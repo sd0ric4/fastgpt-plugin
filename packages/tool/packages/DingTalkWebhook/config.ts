@@ -1,4 +1,5 @@
 import { defineTool } from '@tool/type';
+import { FlowNodeInputTypeEnum, WorkflowIOValueTypeEnum } from '@tool/type/fastgpt';
 
 export default defineTool({
   toolId: 'community-DingTalkWebhook',
@@ -18,7 +19,7 @@ export default defineTool({
     en: 'Send a webhook request to DingTalk.'
   },
   icon: 'plugins/dingding',
-  docURL: 'https://open.dingtalk.com/document/robots/custom-robot-access',
+  courseUrl: 'https://open.dingtalk.com/document/robots/custom-robot-access',
   inputs: [
     {
       valueType: 'string',
@@ -26,12 +27,12 @@ export default defineTool({
       label: '钉钉机器人地址',
       description: '',
       defaultValue: '',
-      renderTypeList: ['input', 'reference'],
+      renderTypeList: [FlowNodeInputTypeEnum.input, FlowNodeInputTypeEnum.reference],
       required: true,
       value: ''
     },
     {
-      renderTypeList: ['input', 'reference'],
+      renderTypeList: [FlowNodeInputTypeEnum.input, FlowNodeInputTypeEnum.reference],
       selectedTypeIndex: 0,
       valueType: 'string',
       key: 'secret',
@@ -50,10 +51,11 @@ export default defineTool({
       required: true
     },
     {
-      renderTypeList: ['input', 'reference'],
+      renderTypeList: [FlowNodeInputTypeEnum.input, FlowNodeInputTypeEnum.reference],
       selectedTypeIndex: 0,
       valueType: 'string',
       key: 'message',
+
       label: '发送的消息',
       description: '发送的消息',
       defaultValue: '',
