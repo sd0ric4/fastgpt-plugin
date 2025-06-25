@@ -37,8 +37,6 @@ export type FileInput = z.infer<typeof FileInputSchema>;
 export class FileService {
   private minioClient: Minio.Client;
   private config: FileConfig;
-  private initPromise: Promise<void>;
-  private isInitialized = false;
 
   // ================================
   // 2.1 初始化相关
@@ -55,141 +53,11 @@ export class FileService {
       accessKey: this.config.accessKey,
       secretKey: this.config.secretKey
     });
-
-    this.initPromise = this.initialize();
-  }
-
-  private async initialize(): Promise<void> {
-    if (this.isInitialized) return;
-
-    try {
-      await this.testConnection();
-      await this.initBucket();
-      this.isInitialized = true;
-      addLog.info('FileService initialized successfully');
-    } catch (error) {
-      addLog.error('FileService initialization failed:', error);
-      throw error;
-    }
-  }
-
-  private async ensureInitialized(): Promise<void> {
-    if (!this.isInitialized) {
-      await this.initPromise;
-    }
   }
 
   // ================================
   // 2.2 连接和存储桶管理
   // ================================
-
-  private async testConnection(): Promise<void> {
-    try {
-      addLog.info(
-        `Testing MinIO connection to ${this.config.endpoint}:${this.config.port} (SSL: ${this.config.useSSL})`
-      );
-      const buckets = await this.minioClient.listBuckets();
-      addLog.info(
-        `MinIO connection successful. Found ${buckets.length} buckets${buckets.length ? ': ' + buckets.map((b) => b.name).join(', ') : ''}`
-      );
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      addLog.error('MinIO connection failed:', {
-        endpoint: this.config.endpoint,
-        port: this.config.port,
-        useSSL: this.config.useSSL,
-        error: message
-      });
-
-      if (error instanceof Error) {
-        const errorHints = {
-          'socket connection was closed': [
-            'MinIO server running?',
-            'Correct endpoint/port?',
-            'Network/firewall OK?',
-            `Try: curl http://${this.config.endpoint}:${this.config.port}/minio/health/live`
-          ],
-          ECONNREFUSED: ['MinIO server not running on specified port'],
-          ENOTFOUND: ['DNS resolution failed - check endpoint']
-        };
-
-        for (const [key, hints] of Object.entries(errorHints)) {
-          if (message.includes(key)) {
-            hints.forEach((hint, i) => addLog.error(`${i + 1}. ${hint}`));
-            break;
-          }
-        }
-      }
-
-      throw new Error(`MinIO connection failed: ${message}`);
-    }
-  }
-
-  private async initBucket() {
-    try {
-      addLog.info(`Checking bucket: ${this.config.bucket}`);
-      const bucketExists = await this.minioClient.bucketExists(this.config.bucket);
-      if (!bucketExists) {
-        addLog.info(`Creating bucket: ${this.config.bucket}`);
-        await this.minioClient.makeBucket(this.config.bucket);
-      }
-      await this.setBucketDownloadOnly();
-    } catch (error) {
-      addLog.error('Failed to initialize bucket:', error);
-      if (error instanceof Error && error.message.includes('Method Not Allowed')) {
-        addLog.warn('Method Not Allowed - bucket may exist with different permissions');
-        return;
-      }
-      throw error;
-    }
-  }
-
-  private async setBucketDownloadOnly() {
-    try {
-      const accessPolicy = {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Principal: '*',
-            Action: ['s3:GetObject'],
-            Resource: [`arn:aws:s3:::${this.config.bucket}/*`]
-          }
-        ]
-      };
-      await this.minioClient.setBucketPolicy(this.config.bucket, JSON.stringify(accessPolicy));
-      await this.setBucketLifecycle();
-      addLog.info(`Bucket ${this.config.bucket} policies set successfully`);
-    } catch (error) {
-      addLog.warn(
-        `Failed to set bucket policies: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
-  }
-
-  private async setBucketLifecycle() {
-    try {
-      const lifecycleConfig: Minio.LifecycleConfig = {
-        Rule: [
-          {
-            ID: 'AutoDeleteRule',
-            Status: 'Enabled',
-            Expiration: {
-              Days: this.config.retentionDays,
-              DeleteMarker: false,
-              DeleteAll: false
-            }
-          }
-        ]
-      };
-      await this.minioClient.setBucketLifecycle(this.config.bucket, lifecycleConfig);
-      addLog.info(`Lifecycle policy set: ${this.config.retentionDays} days retention`);
-    } catch (error) {
-      addLog.warn(
-        `Failed to set lifecycle policy: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
-  }
 
   // ================================
   // 2.3 文件处理工具方法
@@ -239,8 +107,6 @@ export class FileService {
   // ================================
 
   async uploadFile(fileBuffer: Buffer, originalFilename: string): Promise<FileMetadata> {
-    await this.ensureInitialized();
-
     if (fileBuffer.length > this.config.maxFileSize) {
       throw new Error(`File size ${fileBuffer.length} exceeds limit ${this.config.maxFileSize}`);
     }
@@ -367,20 +233,6 @@ export class FileService {
   } {
     addLog.info(`Processing buffer file: ${input.filename}`);
     return { buffer: input.buffer!, filename: input.filename! };
-  }
-
-  // ================================
-  // 2.6 静态方法和实例管理
-  // ================================
-
-  static createForWorker(config?: Partial<FileConfig>): FileService {
-    return new FileService(config);
-  }
-  static getDefaultConfig(): FileConfig {
-    return { ...defaultFileConfig };
-  }
-  getConfig(): FileConfig {
-    return { ...this.config };
   }
 }
 
