@@ -24,12 +24,12 @@ RUN apk add --no-cache\
     && update-ca-certificates
 
 # copy running files
-# COPY --from=builder /app/node_modules/ ./node_modules/
-COPY --from=builder /app/dist/ .
+COPY --from=builder /app/dist/ ./dist/
+COPY --from=builder /app/package.json .
 
 ENV NODE_ENV=production
 ENV PORT=3000
 EXPOSE 3000
 
-ENV serverPath=index.js
-ENTRYPOINT ["sh","-c","node ${serverPath} -p"]
+WORKDIR /app
+ENTRYPOINT ["node", "dist/index.js"]
