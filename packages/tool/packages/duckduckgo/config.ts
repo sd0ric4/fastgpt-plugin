@@ -1,12 +1,5 @@
-// 你应该修改本文件
-// You should modify this file
-
 import { defineToolSet } from '@tool/type';
-import search from './search';
-import searchImg from './searchImg';
-import searchNews from './searchNews';
-import searchVideo from './searchVideo';
-// import tool2 from './tool2'; 添加更多 tools
+import { ToolTypeEnum } from '@tool/type/tool';
 
 export default defineToolSet({
   toolId: 'community-duckduckgo',
@@ -14,18 +7,11 @@ export default defineToolSet({
     'zh-CN': 'DuckDuckGo服务',
     en: 'DuckDuckGo Service'
   },
-  type: 'search',
+  type: ToolTypeEnum.search,
   description: {
     'zh-CN': 'DuckDuckGo 服务，包含网络搜索、图片搜索、新闻搜索等。',
     en: 'DuckDuckGo Service, including network search, image search, news search, etc.'
   },
   icon: 'core/workflow/template/duckduckgo',
-  versionList: [
-    {
-      version: '0.1.0',
-      description: 'Default version'
-    }
-  ],
-  author: 'FastGPT',
-  children: [search, searchImg, searchNews, searchVideo] // 添加更多 tools
+  author: 'FastGPT'
 });

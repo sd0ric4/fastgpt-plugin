@@ -1,10 +1,11 @@
 import path from 'path';
 import { isProd } from '@/constants';
-import type { ToolType, ToolSetType } from './type';
+import type { ToolType, ToolConfigWithCbType, ToolSetConfigType } from './type';
 import { tools } from './constants';
 import { findToolIcon } from './utils/icon';
 import fs from 'fs';
 import { addLog } from '@/utils/log';
+import { ToolTypeEnum } from './type/tool';
 
 const saveFile = async (url: string, path: string) => {
   const response = await fetch(url);
@@ -16,87 +17,81 @@ const saveFile = async (url: string, path: string) => {
   return buffer;
 };
 
-const LoadTool = (mod: ToolType | ToolSetType, filename: string) => {
-  const defaultToolId = filename.split('.').shift() as string;
-  const defaultToolImg = findToolIcon(defaultToolId);
-  const toolId = mod.toolId || defaultToolId;
-  const toolImg = mod.icon || defaultToolImg;
-  if (!mod.isToolSet) {
-    tools.push({
-      ...mod,
-      toolId,
-      icon: toolImg,
-      toolFile: filename
-    } as ToolType);
-  } else {
-    const children = (mod as ToolSetType).children as ToolType[];
-    tools.push({
-      ...mod,
-      toolFile: filename,
-      toolId,
-      inputs: [],
-      outputs: []
-    } as ToolType);
-    tools.push(...children.map((child) => ({ ...child, toolFile: filename })));
-  }
-};
+// Load tool or toolset and its children
+export const LoadToolsByFilename = async (
+  basePath: string,
+  filename: string
+): Promise<ToolType[]> => {
+  const tools: ToolType[] = [];
 
-const LoadToolsProd = async () => {
-  const toolsDir = process.env.TOOLS_DIR || path.join(process.cwd(), 'dist', 'tools');
-  // 两种方式：
-  // 1. 读取 tools 目录下所有目录的 index.js 文件作为 tool
-  const files = fs.readdirSync(toolsDir);
-  for (const file of files) {
-    const filePath = path.join(toolsDir, file);
-    const mod = (await import(filePath)).default as ToolType;
-    LoadTool(mod, file);
-  }
-  // 2. 读取 tools.json 文件中的配置（通过网络挂载）
-  const toolConfigPath = path.join(process.cwd(), 'dist', 'tools.json');
-  if (fs.existsSync(toolConfigPath)) {
-    const toolConfig = JSON.parse(fs.readFileSync(toolConfigPath, 'utf-8')) as {
-      toolId: string;
-      url: string;
-    }[];
-    // every string is a url to get a .js file
-    for (const tool of toolConfig) {
-      await saveFile(tool.url, path.join(toolsDir, tool.toolId + '.js'));
-      const mod = (await import(path.join(toolsDir, tool.toolId + '.js'))).default as ToolType;
-      LoadTool(mod, tool.toolId);
+  const toolRootPath = path.join(basePath, filename);
+  const childrenPath = path.join(toolRootPath, 'children');
+  const isToolSet = fs.existsSync(childrenPath);
+
+  const defaultIcon = findToolIcon(filename);
+
+  if (isToolSet) {
+    const toolset = (await import(toolRootPath)).default as ToolSetConfigType;
+    const toolsetId = toolset.toolId || filename;
+    const icon = toolset.icon || defaultIcon;
+
+    tools.push({
+      ...toolset,
+      toolId: toolsetId,
+      icon,
+      toolDirName: filename,
+      cb: () => Promise.resolve({}),
+      versionList: []
+    });
+    // Push children
+    // 1. Read children
+    const children = fs.readdirSync(childrenPath);
+
+    for await (const child of children) {
+      const childPath = path.join(childrenPath, child);
+      const childMod = (await import(childPath)).default as ToolConfigWithCbType;
+
+      const toolId = childMod.toolId || `${toolsetId}/${child}`;
+
+      tools.push({
+        ...childMod,
+        toolId,
+        parentId: toolsetId,
+        type: toolset.type,
+        icon,
+        toolDirName: filename
+      });
     }
-  }
-  addLog.info(`\
+  } else {
+    const tool = (await import(toolRootPath)).default as ToolConfigWithCbType;
 
-  =================
-  reading tools in prod mode
-  tools:\n[ ${tools.map((tool) => tool.toolId).join(', ')} ]
-  amount: ${tools.length}
-  =================
-      `);
+    tools.push({
+      ...tool,
+      type: tool.type || ToolTypeEnum.tools,
+      icon: tool.icon || defaultIcon,
+      toolId: tool.toolId || filename,
+      toolDirName: filename
+    });
+  }
+
+  return tools;
 };
 
-async function LoadToolsDev() {
-  const toolsPath = path.join(__dirname, 'packages');
-  const toolDirs = fs.readdirSync(toolsPath);
-  for (const tool of toolDirs) {
-    const toolPath = path.join(toolsPath, tool);
-    const mod = (await import(toolPath)).default as ToolType | ToolSetType;
-    LoadTool(mod, tool);
-  }
-  addLog.info(`\
+export async function initTool() {
+  const basePath = isProd
+    ? process.env.TOOLS_DIR || path.join(process.cwd(), 'dist', 'tools')
+    : path.join(__dirname, 'packages');
 
+  const toolDirs = fs.readdirSync(basePath);
+  for (const tool of toolDirs) {
+    const tmpTools = await LoadToolsByFilename(basePath, tool);
+    tools.push(...tmpTools);
+  }
+
+  addLog.info(`
 =================
-  reading tools in dev mode
-  tools:\n[ ${tools.map((tool) => tool.toolId).join(', ')} ]
+  Load tools in ${isProd ? 'production' : 'development'} env
   amount: ${tools.length}
 =================
 `);
-}
-
-export async function initTool() {
-  if (isProd) {
-    await LoadToolsProd();
-  } else {
-    await LoadToolsDev();
-  }
 }

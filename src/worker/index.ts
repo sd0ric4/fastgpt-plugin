@@ -3,6 +3,8 @@ import { getTool } from '@tool/controller';
 import { ToolCallbackReturnSchema } from '../../packages/tool/type/tool';
 import { z } from 'zod';
 import { addLog } from '@/utils/log';
+import { isProd } from '@/constants';
+import type { Worker2MainMessageType } from './type';
 
 type WorkerQueueItem = {
   id: string;
@@ -166,8 +168,11 @@ export async function dispatchWithNewWorker(data: {
   }
 
   const isBun = typeof Bun !== 'undefined';
-  const worker = new Worker('./dist/worker.js', {
-    env: {},
+  const workerPath = isProd ? './dist/worker.js' : `${process.cwd()}/dist/worker.js`;
+  const worker = new Worker(workerPath, {
+    env: {
+      NODE_ENV: process.env.NODE_ENV
+    },
     ...(isBun
       ? {}
       : {
@@ -177,38 +182,47 @@ export async function dispatchWithNewWorker(data: {
         })
   });
 
-  const workerId = `${Date.now()}${Math.random()}`;
-
   const resolvePromise = new Promise<z.infer<typeof ToolCallbackReturnSchema>>(
     (resolve, reject) => {
-      worker.on(
-        'message',
-        ({ type, data }: WorkerResponse<z.infer<typeof ToolCallbackReturnSchema>>) => {
-          if (type === 'success') {
-            resolve(data);
-          } else if (type === 'error') {
-            reject(data);
-          } else if (type === 'log') {
-            console.log(...(data as any));
-          }
+      worker.on('message', ({ type, data }: Worker2MainMessageType) => {
+        if (type === 'success') {
+          resolve(data);
           worker.terminate();
+        } else if (type === 'error') {
+          reject(data);
+          worker.terminate();
+        } else if (type === 'log') {
+          const msg = data as {
+            type: 'info' | 'error' | 'warn';
+            args: any[];
+          };
+          addLog[msg.type](`Tool run: `, msg.args);
+        } else if (type === 'uploadFile') {
+          // TODO upload
+          worker.postMessage({
+            type: 'uploadFileResponse',
+            data: null // TODO: response
+          });
         }
-      );
+      });
 
       worker.on('error', (err) => {
-        console.log(err);
+        addLog.error(`Run tool error`, err);
         reject(err);
         worker.terminate();
       });
       worker.on('messageerror', (err) => {
-        console.log(err);
+        addLog.error(`Run tool error`, err);
         reject(err);
         worker.terminate();
       });
 
       worker.postMessage({
-        filename: tool.toolFile,
-        ...data
+        type: 'runTool',
+        data: {
+          toolDirName: tool.toolDirName,
+          ...data
+        }
       });
     }
   );
