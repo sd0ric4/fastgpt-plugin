@@ -1,12 +1,13 @@
 import z from 'zod';
-
+import { FileInputSchema } from '@/s3/controller';
+import { FileMetadataSchema } from '@/s3/config';
 /**
  * Worker --> Main Thread
  */
 export const Worker2MainMessageSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('uploadFile'),
-    data: z.any() // minio upload file params
+    data: FileInputSchema
   }),
   z.object({
     type: z.literal('log'),
@@ -40,7 +41,7 @@ export const Main2WorkerMessageSchema = z.discriminatedUnion('type', [
   }),
   z.object({
     type: z.literal('uploadFileResponse'),
-    data: z.any() // minio upload file response
+    data: FileMetadataSchema
   })
 ]);
 

@@ -66,8 +66,8 @@ parentPort?.on('message', async (params: Main2WorkerMessageType) => {
         });
       }
       try {
-        const result = tool?.cb(data.inputs, data.systemVar);
-
+        const result = await tool?.cb(data.inputs, data.systemVar);
+        console.log(result, 'result');
         parentPort?.postMessage({
           type: 'success',
           data: result

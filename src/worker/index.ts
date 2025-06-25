@@ -5,7 +5,11 @@ import { z } from 'zod';
 import { addLog } from '@/utils/log';
 import { isProd } from '@/constants';
 import type { Worker2MainMessageType } from './type';
-
+import { FileService } from '@/s3/controller';
+import { defaultFileConfig } from '@/s3/config';
+const fileService = new FileService({
+  ...defaultFileConfig
+});
 type WorkerQueueItem = {
   id: string;
   worker: Worker;
@@ -184,7 +188,7 @@ export async function dispatchWithNewWorker(data: {
 
   const resolvePromise = new Promise<z.infer<typeof ToolCallbackReturnSchema>>(
     (resolve, reject) => {
-      worker.on('message', ({ type, data }: Worker2MainMessageType) => {
+      worker.on('message', async ({ type, data }: Worker2MainMessageType) => {
         if (type === 'success') {
           resolve(data);
           worker.terminate();
@@ -198,10 +202,10 @@ export async function dispatchWithNewWorker(data: {
           };
           addLog[msg.type](`Tool run: `, msg.args);
         } else if (type === 'uploadFile') {
-          // TODO upload
+          const result = await fileService.uploadFileAdvanced(data);
           worker.postMessage({
             type: 'uploadFileResponse',
-            data: null // TODO: response
+            data: result
           });
         }
       });

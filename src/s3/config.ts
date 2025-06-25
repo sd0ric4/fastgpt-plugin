@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export type FileConfig = {
   maxFileSize: number; // 文件大小限制（字节）
   retentionDays: number; // 保留天数（由 MinIO 生命周期策略自动管理）
@@ -21,11 +23,13 @@ export const defaultFileConfig: FileConfig = {
   bucket: process.env.MINIO_BUCKET || 'files'
 };
 
-export interface FileMetadata {
-  fileId: string;
-  originalFilename: string;
-  contentType: string;
-  size: number;
-  uploadTime: Date;
-  accessUrl: string;
-}
+export const FileMetadataSchema = z.object({
+  fileId: z.string(),
+  originalFilename: z.string(),
+  contentType: z.string(),
+  size: z.number(),
+  uploadTime: z.date(),
+  accessUrl: z.string()
+});
+
+export type FileMetadata = z.infer<typeof FileMetadataSchema>;
