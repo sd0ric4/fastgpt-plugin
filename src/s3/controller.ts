@@ -187,7 +187,7 @@ export class FileService {
     try {
       addLog.info(`Setting bucket ${this.config.bucket} policies...`);
 
-      // 设置公共读取策略：允许所有人访问文件（通过 Content-Disposition 确保下载而不是预览）
+      // 设置简化的公共访问策略：允许所有人下载文件
       const accessPolicy = {
         Version: '2012-10-17',
         Statement: [
@@ -201,7 +201,7 @@ export class FileService {
       };
 
       await this.minioClient.setBucketPolicy(this.config.bucket, JSON.stringify(accessPolicy));
-      addLog.info(`Successfully set bucket ${this.config.bucket} to public read access`);
+      addLog.info(`Successfully set bucket ${this.config.bucket} access policy`);
 
       // 设置生命周期策略：自动删除过期文件
       await this.setBucketLifecycle();
@@ -279,22 +279,17 @@ export class FileService {
       uploadTime.getTime() + getRetentionMilliseconds(this.config.retentionDays)
     );
 
-    // 对于安全风险较高的文件类型，强制设置为 application/octet-stream
-    const safeContentType = this.getSafeContentType(contentType);
-
     try {
-      // 上传到 MinIO，设置强制下载的元数据
+      // 上传到 MinIO，设置基本元数据
       await this.minioClient.putObject(
         this.config.bucket,
         objectName,
         fileBuffer,
         fileBuffer.length,
         {
-          'Content-Type': safeContentType,
-          'Content-Disposition': `attachment; filename="${encodeURIComponent(originalFilename)}"`,
+          'Content-Type': contentType || 'application/octet-stream',
           'x-amz-meta-original-filename': encodeURIComponent(originalFilename),
-          'x-amz-meta-upload-time': uploadTime.toISOString(),
-          'x-amz-meta-original-content-type': contentType || 'application/octet-stream'
+          'x-amz-meta-upload-time': uploadTime.toISOString()
         }
       );
 
@@ -591,25 +586,6 @@ export class FileService {
     }
   }
 
-  /**
-   * 获取安全的 Content-Type，强制设置为 application/octet-stream 以确保所有文件都下载而不预览
-   */
-  private getSafeContentType(contentType?: string): string {
-    // 为了安全起见，所有文件都强制设置为 application/octet-stream
-    // 这样确保：
-    // 1. 所有文件都会被下载而不是在浏览器中预览
-    // 2. 避免任何可能的 XSS 或代码执行风险
-    // 3. 统一的安全策略，简单可靠
-
-    if (contentType && contentType !== 'application/octet-stream') {
-      addLog.info(
-        `Converting content type ${contentType} to application/octet-stream for security`
-      );
-    }
-
-    return 'application/octet-stream';
-  }
-
   // 静态方法：为 worker 创建独立的实例
   static createForWorker(config?: Partial<FileConfig>): FileService {
     return new FileService(config);
@@ -625,3 +601,6 @@ export class FileService {
     return { ...this.config };
   }
 }
+
+// 单例实例
+export const fileService = new FileService();
