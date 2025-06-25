@@ -1,4 +1,4 @@
-export interface FileConfig {
+export type FileConfig = {
   maxFileSize: number; // 文件大小限制（字节）
   retentionDays: number; // 保留天数（由 MinIO 生命周期策略自动管理）
   endpoint: string; // MinIO endpoint
@@ -7,7 +7,7 @@ export interface FileConfig {
   accessKey: string; // MinIO access key
   secretKey: string; // MinIO secret key
   bucket: string; // 存储桶名称
-}
+};
 
 // 默认配置（动态从环境变量读取）
 export const defaultFileConfig: FileConfig = {

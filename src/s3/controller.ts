@@ -44,7 +44,6 @@ export class FileService {
 
   constructor(config?: Partial<FileConfig>) {
     this.config = { ...defaultFileConfig, ...config };
-    addLog.info(`Initializing MinIO client: ${this.config.endpoint}:${this.config.port}`);
 
     this.minioClient = new Minio.Client({
       endPoint: this.config.endpoint,
@@ -108,7 +107,9 @@ export class FileService {
 
   async uploadFile(fileBuffer: Buffer, originalFilename: string): Promise<FileMetadata> {
     if (fileBuffer.length > this.config.maxFileSize) {
-      throw new Error(`File size ${fileBuffer.length} exceeds limit ${this.config.maxFileSize}`);
+      return Promise.reject(
+        new Error(`File size ${fileBuffer.length} exceeds limit ${this.config.maxFileSize}`)
+      );
     }
 
     const fileId = this.generateFileId();
@@ -141,13 +142,13 @@ export class FileService {
         accessUrl: this.generateAccessUrl(fileId, originalFilename)
       };
 
-      addLog.info(`File uploaded successfully: ${fileId}`);
       return metadata;
     } catch (error) {
       addLog.error('Failed to upload file:', error);
-      throw error;
+      return Promise.reject(error);
     }
   }
+
   async uploadFileAdvanced(input: FileInput): Promise<FileMetadata> {
     const validatedInput = FileInputSchema.parse(input);
 
@@ -157,25 +158,19 @@ export class FileService {
         if (validatedInput.path) return await this.handleLocalFile(validatedInput);
         if (validatedInput.data) return this.handleBase64File(validatedInput);
         if (validatedInput.buffer) return this.handleBufferFile(validatedInput);
-        throw new Error('No valid input method provided');
+        return Promise.reject(new Error('No valid input method provided'));
       })();
 
       const metadata = await this.uploadFile(buffer, filename);
-      const inputType = validatedInput.url
-        ? 'network'
-        : validatedInput.path
-          ? 'local'
-          : validatedInput.data
-            ? 'base64'
-            : 'buffer';
-      addLog.info(`File uploaded via ${inputType}: ${filename} -> ${metadata.fileId}`);
       return metadata;
     } catch (error) {
       if (error instanceof z.ZodError) {
-        throw new Error(`Invalid input: ${error.errors.map((e) => e.message).join(', ')}`);
+        return Promise.reject(
+          new Error(`Invalid input: ${error.errors.map((e) => e.message).join(', ')}`)
+        );
       }
       addLog.error(`Upload failed:`, error);
-      throw error;
+      return Promise.reject(error);
     }
   }
 
@@ -184,28 +179,32 @@ export class FileService {
   // ================================
 
   private async handleNetworkFile(input: FileInput): Promise<{ buffer: Buffer; filename: string }> {
-    addLog.info(`Downloading: ${input.url}`);
     const response = await fetch(input.url!);
-    if (!response.ok) throw new Error(`Download failed: ${response.status} ${response.statusText}`);
+    if (!response.ok)
+      return Promise.reject(
+        new Error(`Download failed: ${response.status} ${response.statusText}`)
+      );
 
     const buffer = Buffer.from(await response.arrayBuffer());
-    let filename = input.filename;
+    const filename = (() => {
+      if (input.filename) return input.filename;
 
-    if (!filename) {
-      filename = path.basename(new URL(input.url!).pathname) || 'downloaded_file';
+      const urlFilename = path.basename(new URL(input.url!).pathname) || 'downloaded_file';
 
       // 如果文件名没有扩展名，使用默认扩展名
-      if (!path.extname(filename)) {
-        filename += '.bin'; // 默认扩展名
+      if (!path.extname(urlFilename)) {
+        return urlFilename + '.bin'; // 默认扩展名
       }
-    }
+
+      return urlFilename;
+    })();
 
     return { buffer, filename };
   }
 
   private async handleLocalFile(input: FileInput): Promise<{ buffer: Buffer; filename: string }> {
-    addLog.info(`Reading local file: ${input.path}`);
-    if (!fs.existsSync(input.path!)) throw new Error(`File not found: ${input.path}`);
+    if (!fs.existsSync(input.path!))
+      return Promise.reject(new Error(`File not found: ${input.path}`));
 
     const buffer = await fs.promises.readFile(input.path!);
     const filename = input.filename || path.basename(input.path!);
@@ -217,9 +216,10 @@ export class FileService {
     buffer: Buffer;
     filename: string;
   } {
-    addLog.info(`Processing base64 file: ${input.filename}`);
-    let base64Data = input.data!;
-    if (base64Data.includes(',')) base64Data = base64Data.split(',')[1]; // Remove data URL prefix
+    const base64Data = (() => {
+      const data = input.data!;
+      return data.includes(',') ? data.split(',')[1] : data; // Remove data URL prefix if present
+    })();
 
     return {
       buffer: Buffer.from(base64Data, 'base64'),
@@ -231,7 +231,6 @@ export class FileService {
     buffer: Buffer;
     filename: string;
   } {
-    addLog.info(`Processing buffer file: ${input.filename}`);
     return { buffer: input.buffer!, filename: input.filename! };
   }
 }
