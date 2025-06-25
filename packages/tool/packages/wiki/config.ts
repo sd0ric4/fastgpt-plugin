@@ -4,16 +4,11 @@ import {
   FlowNodeOutputTypeEnum,
   WorkflowIOValueTypeEnum
 } from '@tool/type/fastgpt';
+import { ToolTypeEnum } from '@tool/type/tool';
 
 export default defineTool({
   toolId: 'community-wiki',
-  versionList: [
-    {
-      version: '0.1.0',
-      description: 'Default version'
-    }
-  ],
-  type: 'search',
+  type: ToolTypeEnum.search,
   name: {
     'zh-CN': 'Wiki搜索',
     en: 'Wiki Search'
@@ -23,26 +18,32 @@ export default defineTool({
     en: 'Search meanings in Wiki.'
   },
   icon: 'core/workflow/template/wiki',
-  inputs: [
+  versionList: [
     {
-      renderTypeList: [FlowNodeInputTypeEnum.input, FlowNodeInputTypeEnum.reference],
-      selectedTypeIndex: 0,
-      valueType: WorkflowIOValueTypeEnum.string,
-      key: 'query',
-      label: 'query',
-      description: '检索词',
-      required: true,
-      toolDescription: '检索词'
-    }
-  ],
-  outputs: [
-    {
-      id: 'result',
-      type: FlowNodeOutputTypeEnum.static,
-      valueType: WorkflowIOValueTypeEnum.string,
-      key: 'result',
-      label: '搜索结果',
-      description: '搜索结果'
+      value: '0.1.0',
+      description: 'Default version',
+      inputs: [
+        {
+          renderTypeList: [FlowNodeInputTypeEnum.input, FlowNodeInputTypeEnum.reference],
+          selectedTypeIndex: 0,
+          valueType: WorkflowIOValueTypeEnum.string,
+          key: 'query',
+          label: 'query',
+          description: '检索词',
+          required: true,
+          toolDescription: '检索词'
+        }
+      ],
+      outputs: [
+        {
+          id: 'result',
+          type: FlowNodeOutputTypeEnum.static,
+          valueType: WorkflowIOValueTypeEnum.string,
+          key: 'result',
+          label: '搜索结果',
+          description: '搜索结果'
+        }
+      ]
     }
   ]
 });
