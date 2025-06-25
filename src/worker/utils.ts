@@ -1,8 +1,10 @@
+import type { FileMetadata } from '@/s3/config';
+import type { FileInput } from '@/s3/controller';
 import { parentPort } from 'worker_threads';
 
-export const uploadFile = async (data: any) => {
-  return new Promise((resolve, reject) => {
-    global.uploadFileResponseFn = (res: any) => {
+export const uploadFile = async (data: FileInput) => {
+  return new Promise<FileMetadata>((resolve, reject) => {
+    global.uploadFileResponseFn = (res: FileMetadata) => {
       resolve(res);
     };
     parentPort?.postMessage({
@@ -14,7 +16,7 @@ export const uploadFile = async (data: any) => {
 
 declare global {
   // eslint-disable-next-line no-var
-  var uploadFileResponseFn: (data: any) => void | undefined;
+  var uploadFileResponseFn: (data: FileMetadata) => void | undefined;
 }
 
 export {};
