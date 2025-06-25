@@ -234,23 +234,3 @@ export class FileService {
     return { buffer: input.buffer!, filename: input.filename! };
   }
 }
-
-// ================================
-// 3. 单例实例和便捷导出
-// ================================
-
-// 创建默认的文件服务实例
-export const fileService = new FileService();
-
-// 便捷的上传函数 - 直接使用默认实例
-export async function uploadFile(input: FileInput): Promise<FileMetadata> {
-  return await fileService.uploadFileAdvanced(input);
-}
-
-// 便捷的基础上传函数
-export async function uploadFileBuffer(
-  fileBuffer: Buffer,
-  filename: string
-): Promise<FileMetadata> {
-  return await fileService.uploadFile(fileBuffer, filename);
-}
