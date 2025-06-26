@@ -65,9 +65,19 @@ export class S3Service {
 
       const buffer = Buffer.from(await response.arrayBuffer());
       const filename = (() => {
-        if (input.defaultFilename) return input.defaultFilename;
+        const urlFilename = (() => {
+          const contentDisposition = response.headers.get('content-disposition');
+          if (contentDisposition) {
+            // 处理 RFC 5987 格式: filename*=UTF-8''filename 或标准格式: filename="filename"
+            const filenameRegex = /filename\*?=(?:UTF-8'')?(['"]?)([^'"\s;]+)\1/i;
+            const matches = filenameRegex.exec(contentDisposition);
+            if (matches != null && matches[2]) {
+              return decodeURIComponent(matches[2]);
+            }
+          }
 
-        const urlFilename = path.basename(new URL(input.url!).pathname) || 'downloaded_file';
+          return path.basename(new URL(input.url!).pathname) || 'network_file';
+        })();
 
         // 如果文件名没有扩展名，使用默认扩展名
         if (!path.extname(urlFilename)) {
