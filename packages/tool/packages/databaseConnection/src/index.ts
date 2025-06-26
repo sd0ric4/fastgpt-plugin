@@ -2,19 +2,25 @@ import { z } from 'zod';
 import { Client as PgClient } from 'pg'; // PostgreSQL 客户端
 import mysql from 'mysql2/promise'; // MySQL 客户端
 import mssql from 'mssql'; // SQL Server 客户端
+import { addLog } from '@/utils/log';
 
 // const supportedDatabaseTypes = ['PostgreSQL', 'MySQL', 'Microsoft SQL Server'];
 const supportedDatabaseTypes = z.enum(['PostgreSQL', 'MySQL', 'Microsoft SQL Server']);
 
-export const InputType = z.object({
-  databaseType: supportedDatabaseTypes,
-  host: z.string(),
-  port: z.string(),
-  databaseName: z.string(),
-  user: z.string(),
-  password: z.string(),
-  sql: z.string()
-});
+export const InputType = z
+  .object({
+    databaseType: supportedDatabaseTypes,
+    host: z.string(),
+    port: z.union([z.string(), z.number()]),
+    databaseName: z.string(),
+    user: z.string(),
+    password: z.string(),
+    sql: z.string()
+  })
+  .transform((data) => ({
+    ...data,
+    port: typeof data.port === 'string' ? parseInt(data.port, 10) : data.port
+  }));
 
 export const OutputType = z.object({
   // result: any; // 根据你的 SQL 查询结果类型调整
@@ -31,12 +37,19 @@ export async function tool({
   user
 }: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
   let result;
-
+  addLog.info('DatabaseConnection tool', {
+    databaseType,
+    host,
+    port,
+    databaseName,
+    user,
+    sql
+  });
   try {
     if (databaseType === 'PostgreSQL') {
       const client = new PgClient({
         host,
-        port: parseInt(port, 10),
+        port,
         database: databaseName,
         user,
         password,
@@ -50,7 +63,7 @@ export async function tool({
     } else if (databaseType === 'MySQL') {
       const connection = await mysql.createConnection({
         host,
-        port: parseInt(port, 10),
+        port,
         database: databaseName,
         user,
         password,
@@ -63,7 +76,7 @@ export async function tool({
     } else if (databaseType === 'Microsoft SQL Server') {
       const pool = await mssql.connect({
         server: host,
-        port: parseInt(port, 10),
+        port,
         database: databaseName,
         user,
         password,
