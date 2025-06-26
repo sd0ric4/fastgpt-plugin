@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { Client as PgClient } from 'pg'; // PostgreSQL 客户端
 import mysql from 'mysql2/promise'; // MySQL 客户端
 import mssql from 'mssql'; // SQL Server 客户端
-import { addLog } from '@/utils/log';
 
 // const supportedDatabaseTypes = ['PostgreSQL', 'MySQL', 'Microsoft SQL Server'];
 const supportedDatabaseTypes = z.enum(['PostgreSQL', 'MySQL', 'Microsoft SQL Server']);
@@ -37,14 +36,6 @@ export async function tool({
   user
 }: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
   let result;
-  addLog.info('DatabaseConnection tool', {
-    databaseType,
-    host,
-    port,
-    databaseName,
-    user,
-    sql
-  });
   try {
     if (databaseType === 'PostgreSQL') {
       const client = new PgClient({
