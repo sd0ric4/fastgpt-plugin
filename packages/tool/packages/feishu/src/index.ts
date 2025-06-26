@@ -1,3 +1,4 @@
+import { addLog } from '@/utils/log';
 import { z } from 'zod';
 
 export const InputType = z.object({
@@ -15,6 +16,10 @@ function format(content: string) {
     if (typeof parseData === 'object') {
       return parseData;
     }
+    addLog.info('Feishu tool format content', {
+      content,
+      parseData
+    });
     return {
       msg_type: 'text',
       content: {
@@ -25,7 +30,7 @@ function format(content: string) {
     return {
       msg_type: 'text',
       content: {
-        text: content
+        text: err
       }
     };
   }
@@ -41,6 +46,6 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     body: JSON.stringify(data)
   });
   return {
-    result: String(response)
+    result: await response.text()
   };
 }
