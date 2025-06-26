@@ -46,31 +46,6 @@ export default defineTool({
               label: 'cx',
               description: 'Google搜索cxID',
               required: true,
-              inputType: 'string'
-            }
-          ]
-        },
-        {
-          key: 'system_input_config',
-          label: '',
-          renderTypeList: [FlowNodeInputTypeEnum.hidden],
-          valueType: WorkflowIOValueTypeEnum.object,
-          defaultValue: {
-            type: 'system'
-          },
-          inputList: [
-            {
-              key: 'key',
-              label: 'key',
-              description: 'Google搜索key',
-              required: true,
-              inputType: 'secret'
-            },
-            {
-              key: 'cx',
-              label: 'cx',
-              description: 'Google搜索cxID',
-              required: true,
               inputType: 'secret'
             }
           ]
