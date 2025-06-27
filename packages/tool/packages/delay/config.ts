@@ -22,9 +22,10 @@ export default defineTool({
         {
           key: 'ms',
           label: '延迟时长',
-          renderTypeList: [FlowNodeInputTypeEnum.input, FlowNodeInputTypeEnum.reference],
+          renderTypeList: [FlowNodeInputTypeEnum.numberInput, FlowNodeInputTypeEnum.reference],
           valueType: WorkflowIOValueTypeEnum.number,
-          description: '要暂停的时间，单位毫秒'
+          description: '要暂停的时间，单位毫秒',
+          defaultValue: 1000
         }
       ],
       outputs: []
