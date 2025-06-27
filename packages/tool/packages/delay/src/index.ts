@@ -7,11 +7,11 @@ export const InputType = z
     延时时长: z.number().min(1).max(300000).optional()
   })
   .refine((data) => {
-    return data.ms || data['延时时长'] || 1;
+    return data.ms || data.延时时长 || 1;
   })
   .transform((data) => {
     return {
-      ms: data.ms ?? data['延时时长']
+      ms: data.ms || data.延时时长
     };
   });
 
