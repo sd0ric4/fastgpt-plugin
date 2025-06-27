@@ -1,13 +1,26 @@
 import { z } from 'zod';
 import * as echarts from 'echarts';
 import { uploadFile } from '@/worker/utils';
+import json5 from 'json5';
 
-export const InputType = z.object({
-  title: z.string().optional(),
-  xAxis: z.array(z.union([z.string(), z.number()])),
-  yAxis: z.array(z.union([z.string(), z.number()])),
-  chartType: z.string()
-});
+export const InputType = z
+  .object({
+    title: z.string().optional(),
+    xAxis: z.union([z.string(), z.array(z.union([z.string(), z.number()]))]),
+    yAxis: z.union([z.string(), z.array(z.union([z.string(), z.number()]))]),
+    chartType: z.string()
+  })
+  .transform((data) => {
+    return {
+      ...data,
+      xAxis: (Array.isArray(data.xAxis) ? data.xAxis : (json5.parse(data.xAxis) as string[])).map(
+        (item) => String(item)
+      ),
+      yAxis: (Array.isArray(data.yAxis) ? data.yAxis : (json5.parse(data.yAxis) as string[])).map(
+        (item) => String(item)
+      )
+    };
+  });
 
 type SeriesData = {
   name: string;
@@ -87,12 +100,7 @@ export async function tool({
   yAxis,
   chartType
 }: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
-  const base64 = await generateChart(
-    title,
-    xAxis.map((value) => value.toString()),
-    yAxis.map((value) => value.toString()),
-    chartType
-  );
+  const base64 = await generateChart(title, xAxis, yAxis, chartType);
   return {
     '图表 url': base64, // 兼容旧版
     chartUrl: base64
