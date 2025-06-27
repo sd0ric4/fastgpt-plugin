@@ -7,6 +7,7 @@ export default defineToolSet({
     en: 'Template Tool Set'
   },
   icon: '',
+  children: [],
   type: ToolTypeEnum.tools,
   description: {
     'zh-CN': '这是一个样例工具集',
