@@ -16,16 +16,16 @@ export enum EventTypeEnum {
 
 const logMap = {
   [LogLevelEnum.debug]: {
-    levelLog: chalk.green('[Debug]')
+    levelLog: chalk.green('🐛 [Debug]')
   },
   [LogLevelEnum.info]: {
-    levelLog: chalk.blue('[Info]')
+    levelLog: chalk.blue('💬 [Info]')
   },
   [LogLevelEnum.warn]: {
-    levelLog: chalk.yellow('[Warn]')
+    levelLog: chalk.yellow('⚠️ [Warn]')
   },
   [LogLevelEnum.error]: {
-    levelLog: chalk.red('[Error]')
+    levelLog: chalk.red('❌ [Error]')
   }
 };
 const envLogLevelMap: Record<string, number> = {
@@ -54,22 +54,7 @@ export const addLog = {
       }`
     );
 
-    if (level === LogLevelEnum.error) console.error(obj);
-
-    // store log
-    // if (level >= STORE_LOG_LEVEL && connectionMongo.connection.readyState === 1) {
-    //   (async () => {
-    //     try {
-    //       await getMongoLog().create({
-    //         text: msg,
-    //         level,
-    //         metadata: obj
-    //       });
-    //     } catch (error) {
-    //       console.error('store log error', error);
-    //     }
-    //   })();
-    // }
+    if (level === LogLevelEnum.error) console.log(obj);
   },
   debug(msg: string, obj?: Record<string, any>) {
     this.log(LogLevelEnum.debug, msg, obj);
