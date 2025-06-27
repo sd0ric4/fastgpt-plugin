@@ -9,9 +9,9 @@ export default defineToolSet({
     en: 'Silicon Flow'
   },
   type: ToolTypeEnum.tools,
-  children: [paint, wanAi],
   description: {
     'zh-CN': '这是一个硅基流动工具集',
     en: 'This is a Silicon Flow tool set'
-  }
+  },
+  children: [paint, wanAi]
 });

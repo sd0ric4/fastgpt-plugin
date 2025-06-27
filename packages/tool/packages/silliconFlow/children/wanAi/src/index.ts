@@ -3,8 +3,10 @@ import { z } from 'zod';
 
 export const InputType = z
   .object({
-    url: z.string().describe('硅基流动接口视频基础地址，例如：https://api.siliconflow.cn/v1/video'),
-    authorization: z.string().describe('接口凭证（不需要 Bearer），如 sk-xxxx'),
+    url: z
+      .string()
+      .describe('Base URL for Silicon Flow video API, e.g., https://api.siliconflow.cn/v1/video'),
+    authorization: z.string().describe('API token (without Bearer), e.g., sk-xxxx'),
     model: z
       .enum([
         'Wan-AI/Wan2.1-T2V-14B',
@@ -13,33 +15,43 @@ export const InputType = z
         'Wan-AI/Wan2.1-I2V-14B-720P-Turbo'
       ])
       .default('Wan-AI/Wan2.1-T2V-14B')
-      .describe('模型名称'),
-    prompt: z.string().describe('用于生成视频描述的文本提示词'),
+      .describe('Model name'),
+    prompt: z.string().describe('Text prompt for video generation'),
     image_size: z
       .enum(['1280x720', '720x1280', '960x960'])
       .default('1280x720')
-      .describe('生成内容的长宽比'),
-    negative_prompt: z.string().optional().describe('用于排除不希望出现在生成内容中的元素'),
+      .describe('Aspect ratio of the generated content'),
+    negative_prompt: z.string().optional().describe('Negative prompt to exclude unwanted elements'),
     image: z
       .string()
       .url()
       .or(z.string().startsWith('data:image/'))
       .optional()
       .describe(
-        '部分模型必填，支持 base64 或图片 URL。例如："data:image/png;base64,XXX" 或图片链接'
+        'Required for some models. Supports base64 or image URL, e.g., "data:image/png;base64,XXX" or image link'
       ),
-    seed: z.number().optional().describe('用于控制生成内容的随机性')
+    seed: z.number().optional().describe('Random seed for controlling generation randomness')
   })
-  .describe('硅基流动视频生成接口参数');
+  .describe('Silicon Flow video generation API parameters');
 
 export const OutputType = z.object({
-  status: z.enum(['Succeed', 'InQueue', 'InProgress', 'Failed']),
-  reason: z.string(),
-  results: z.object({
-    videos: z.array(z.object({ url: z.string().url() })),
-    timings: z.object({ inference: z.number() }),
-    seed: z.number()
-  })
+  status: z.enum(['Succeed', 'InQueue', 'InProgress', 'Failed']).describe('Operation status'),
+  reason: z.string().describe('Reason for the operation'),
+  results: z
+    .object({
+      videos: z
+        .array(
+          z.object({
+            url: z.string().url().describe('URL of the generated video, valid for 1 hour')
+          })
+        )
+        .describe('List of generated videos'),
+      timings: z
+        .object({ inference: z.number().describe('Inference time') })
+        .describe('Timing information'),
+      seed: z.number().describe('Seed value')
+    })
+    .describe('Result object containing videos, timings, and seed')
 });
 
 async function sleep(ms: number) {
@@ -48,10 +60,9 @@ async function sleep(ms: number) {
 
 export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
   props = InputType.parse(props);
-  addLog.error('调用硅基流动视频生成接口，参数:', { props });
+  addLog.error('Call Silicon Flow video generation API, params:', { props });
   const { url, authorization, ...params } = props;
 
-  // 不再处理 image 字段的 base64 转换
   const submitBody = Object.fromEntries(
     Object.entries({
       model: params.model,
@@ -63,7 +74,7 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     }).filter(([, value]) => value !== undefined)
   );
 
-  // 1. 提交生成任务
+  // 1. Submit generation task
   const submitRes = await fetch(`${url}/submit`, {
     method: 'POST',
     headers: {
@@ -75,11 +86,10 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
 
   const submitData = await submitRes.json();
   if (!submitRes.ok || !submitData.requestId) {
-    throw new Error('提交任务失败: ' + (submitData?.message || submitRes.statusText));
+    return Promise.reject(`Task submission failed: ${submitData?.message || submitRes.statusText}`);
   }
-  addLog.error('任务提交成功，Request ID:', submitData.requestId);
 
-  // 2. 轮询获取结果
+  // 2. Poll for result
   let statusRes: Response | undefined = undefined;
   let statusData: any = undefined;
   for (let i = 0; i < 180; i++) {
@@ -98,9 +108,8 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     }
   }
 
-  // 明确判断 statusRes 是否为 undefined
   if (!statusRes || !statusRes.ok) {
-    throw new Error('获取结果失败: ' + (statusData?.message || statusRes?.statusText));
+    return Promise.reject(`Failed to get result: ${statusData?.message || statusRes?.statusText}`);
   }
 
   return OutputType.parse(statusData);

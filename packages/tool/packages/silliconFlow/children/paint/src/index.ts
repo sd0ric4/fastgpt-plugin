@@ -4,42 +4,57 @@ export const InputType = z
   .object({
     url: z
       .string()
-      .describe('硅基流动接口绘图基础地址，例如：https://api.siliconflow.cn/v1/images/generations'),
-    authorization: z.string().describe('接口凭证（不需要 Bearer），如 sk-xxxx'),
+      .describe(
+        'Base URL for Silicon Flow painting API, e.g., https://api.siliconflow.cn/v1/images/generations'
+      ),
+    authorization: z.string().describe('API token (without Bearer), e.g., sk-xxxx'),
     model: z
       .enum(['Kwai-Kolors/Kolors'])
       .default('Kwai-Kolors/Kolors')
-      .describe('模型名称，当前仅支持 Kwai-Kolors/Kolors'),
-    prompt: z.string().describe('绘图提示词'),
+      .describe('Model name, currently only supports Kwai-Kolors/Kolors'),
+    prompt: z.string().describe('Text prompt for image generation'),
     image_size: z
       .enum(['1024x1024', '960x1280', '768x1024', '720x1440', '720x1280', '512x512', '2048x2048'])
       .default('1024x1024')
-      .describe('绘图尺寸'),
-    batch_size: z.number().min(1).max(4).default(1).describe('生成的图片数量，范围为 1-4'),
-    num_inference_steps: z.number().min(1).max(100).default(20).describe('推理步数，范围为 1-100'),
+      .describe('Image size'),
+    batch_size: z
+      .number()
+      .min(1)
+      .max(4)
+      .default(1)
+      .describe('Number of images to generate, range 1-4'),
+    num_inference_steps: z
+      .number()
+      .min(1)
+      .max(100)
+      .default(20)
+      .describe('Number of inference steps, range 1-100'),
     guidance_scale: z
       .number()
       .min(0)
       .max(20)
       .default(7.5)
-      .describe('控制生成图像与提示词的匹配程度，0-20'),
-    negative_prompt: z.string().optional().describe('用于排除不希望出现在生成图像中的元素'),
+      .describe('Controls how closely the image matches the prompt, range 0-20'),
+    negative_prompt: z
+      .string()
+      .optional()
+      .describe('Negative prompt to exclude unwanted elements in the image'),
     seed: z
       .number()
       .min(0)
       .max(9999999999)
       .optional()
-      .describe('用于控制生成图像的随机性。范围为 0-9999999999'),
+      .describe('Random seed for image generation, range 0-9999999999'),
     image: z
       .string()
       .url()
       .or(z.string().startsWith('data:image/'))
       .optional()
       .describe(
-        '需要上传的图片，支持图片 URL 或 base64 格式，如 "https://xxx/xx.png" 或 "data:image/png;base64,XXX"'
+        'Image to upload, supports image URL or base64 format, e.g., "https://xxx/xx.png" or "data:image/png;base64,XXX"'
       )
   })
-  .describe('硅基流动绘图接口参数');
+  .describe('Silicon Flow painting API parameters');
 
 export const OutputType = z.object({
   images: z
@@ -48,17 +63,19 @@ export const OutputType = z.object({
         url: z
           .string()
           .url()
-          .describe('生成图片的 URL，链接有效期为一小时，请及时下载保存，避免因过期无法访问')
+          .describe(
+            'URL of the generated image, valid for one hour. Please download and save promptly to avoid expiration.'
+          )
       })
     )
-    .describe('生成的图片列表，包含图片 URL 和其他信息'),
+    .describe('List of generated images, including image URLs and other information'),
   timings: z
     .object({
-      inference: z.number().describe('推理耗时，单位毫秒')
+      inference: z.number().describe('Inference time in milliseconds')
     })
     .passthrough()
-    .describe('推理过程的时间信息'),
-  seed: z.number().describe('用于控制生成图像的随机性')
+    .describe('Timing information for the inference process'),
+  seed: z.number().describe('Random seed for image generation')
 });
 
 // 错误状态码映射
@@ -73,7 +90,10 @@ const ERROR_MESSAGES = {
 
 export async function urlToBase64(imageUrl: string): Promise<string> {
   const res = await fetch(imageUrl);
-  if (!res.ok) throw new Error('图片下载失败: ' + imageUrl);
+  if (!res.ok)
+    return Promise.reject(
+      `Failed to fetch image from ${imageUrl}: ${res.status} ${res.statusText}`
+    );
   const buffer = Buffer.from(await res.arrayBuffer());
   // 简单推断 mime
   const mime = imageUrl.endsWith('.png')
@@ -120,7 +140,7 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     body: JSON.stringify(body)
   });
 
-  const text = await response.text();
+  const text = await response.json();
   const data = (() => {
     try {
       return JSON.parse(text);
@@ -137,7 +157,7 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
         ? data.message
         : `Response error: ${response.status} ${response.statusText}`;
 
-    throw new Error(message);
+    return Promise.reject(message);
   }
 
   return OutputType.parse(data);
