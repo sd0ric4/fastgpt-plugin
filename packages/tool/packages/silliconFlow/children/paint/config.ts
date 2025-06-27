@@ -6,7 +6,6 @@ import {
 } from '@tool/type/fastgpt';
 
 export default defineTool({
-  toolId: 'systemTool-siliconFlow-paint',
   name: {
     'zh-CN': 'Kwai-Kolors/Kolors画图',
     en: 'Kwai-Kolors/Kolors painting'

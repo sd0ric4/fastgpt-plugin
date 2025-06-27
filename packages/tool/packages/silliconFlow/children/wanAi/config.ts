@@ -7,7 +7,6 @@ import {
 import { tool } from './src';
 
 export default defineTool({
-  toolId: 'systemTool-siliconFlow-wanAi',
   name: {
     'zh-CN': 'Wan-AI 视频生成',
     en: 'Wan-AI Video Generation'

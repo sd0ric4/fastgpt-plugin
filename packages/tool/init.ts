@@ -29,7 +29,7 @@ export const LoadToolsByFilename = async (
   const defaultIcon = findToolIcon(filename);
 
   if ('children' in rootMod) {
-    const toolsetId = rootMod.toolId || 'systemTool-' + filename;
+    const toolsetId = rootMod.toolId || filename;
     const icon = rootMod.icon || defaultIcon;
 
     tools.push({
