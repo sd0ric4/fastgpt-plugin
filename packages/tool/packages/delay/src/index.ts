@@ -11,6 +11,7 @@ export const InputType = z
   })
   .transform((data) => {
     return {
+      ...data,
       ms: data.ms || data.延时时长
     };
   });
