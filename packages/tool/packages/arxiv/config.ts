@@ -3,7 +3,6 @@ import { ToolTypeEnum } from '@tool/type/tool';
 import keywordSearch from './children/keywordSearch';
 
 export default defineToolSet({
-  toolId: 'community-arxiv',
   name: {
     'zh-CN': 'ArXiv 工具集',
     en: 'ArXiv Tools'

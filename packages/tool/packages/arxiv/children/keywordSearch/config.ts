@@ -7,7 +7,6 @@ import {
 import { ToolTypeEnum } from '@tool/type/tool';
 
 export default defineTool({
-  toolId: 'community-arxiv-keywordSearch',
   type: ToolTypeEnum.search,
   icon: 'plugins/arxiv',
   name: {
