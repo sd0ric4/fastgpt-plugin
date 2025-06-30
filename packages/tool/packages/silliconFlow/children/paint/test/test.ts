@@ -4,7 +4,7 @@ async function main() {
   // 构造测试参数
   const params = {
     url: 'https://api.siliconflow.cn/v1/images/generations',
-    authorization: 'sk-zvzcihczztceznpfvrvoilrbfywlbkdcyyjcdpinmgeddbsp', // 请替换为有效的 token
+    authorization: '<your_token>', // 请替换为有效的 token
     prompt: '一只可爱的猫咪插画',
     image_size: '1024x1024',
     batch_size: 1,

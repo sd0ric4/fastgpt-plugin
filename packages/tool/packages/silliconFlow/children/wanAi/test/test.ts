@@ -17,7 +17,7 @@ async function main() {
     seed?: number;
   } = {
     url: 'https://api.siliconflow.cn/v1/video',
-    authorization: 'sk-zvzcihczztceznpfvrvoilrbfywlbkdcyyjcdpinmgeddbsp', // 请替换为有效的 token
+    authorization: '<your_token>', // 请替换为有效的 token
     model: 'Wan-AI/Wan2.1-T2V-14B',
     prompt: '一只可爱的猫咪在花园里玩耍',
     image_size: '1280x720'
