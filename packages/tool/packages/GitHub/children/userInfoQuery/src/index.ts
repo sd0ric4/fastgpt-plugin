@@ -56,8 +56,8 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     `https://api.github.com/users/${username}/repos?per_page=100`,
     token
   );
-  return OutputType.parse({
+  return {
     userInfo,
     repos: Array.isArray(repos) ? repos : []
-  });
+  };
 }

@@ -82,5 +82,5 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     arxivId: extractArxivId(entry.id)
   };
 
-  return OutputType.parse({ paper });
+  return { paper };
 }

@@ -68,7 +68,7 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
       url: info.license.url
     };
   }
-  return OutputType.parse({
+  return {
     info: {
       full_name: info.full_name,
       description: info.description,
@@ -84,5 +84,5 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     },
     readme,
     license
-  });
+  };
 }

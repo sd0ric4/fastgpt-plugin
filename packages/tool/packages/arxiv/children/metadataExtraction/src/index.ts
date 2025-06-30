@@ -193,5 +193,5 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     downloadUrls
   };
 
-  return OutputType.parse({ metadata });
+  return { metadata };
 }

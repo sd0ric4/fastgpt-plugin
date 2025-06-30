@@ -64,5 +64,5 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     published: e.published ?? ''
   }));
 
-  return OutputType.parse({ papers });
+  return { papers };
 }
