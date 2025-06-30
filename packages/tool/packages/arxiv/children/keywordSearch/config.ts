@@ -30,7 +30,7 @@ export default defineTool({
           required: true,
           valueType: WorkflowIOValueTypeEnum.string,
           renderTypeList: [FlowNodeInputTypeEnum.input, FlowNodeInputTypeEnum.reference],
-          toolDescription: '搜索关键词'
+          toolDescription: '要搜索的论文关键词，例如: "machine learning", "neural networks" 等'
         },
         {
           key: 'maxResults',
