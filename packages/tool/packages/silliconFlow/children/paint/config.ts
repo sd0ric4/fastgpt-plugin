@@ -24,13 +24,6 @@ export default defineTool({
           label: '',
           inputList: [
             {
-              key: 'url',
-              label: '硅基流动接口绘图基础地址',
-              description: '例如：https://api.siliconflow.cn/v1/images/generations',
-              inputType: 'input',
-              required: true
-            },
-            {
               key: 'authorization',
               label: '接口凭证（不需要 Bearer）',
               description: 'sk-xxxx',

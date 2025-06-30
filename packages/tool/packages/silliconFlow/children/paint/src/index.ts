@@ -6,7 +6,8 @@ export const InputType = z
       .string()
       .describe(
         'Base URL for Silicon Flow painting API, e.g., https://api.siliconflow.cn/v1/images/generations'
-      ),
+      )
+      .default('https://api.siliconflow.cn/v1/images/generations'),
     authorization: z.string().describe('API token (without Bearer), e.g., sk-xxxx'),
     model: z
       .enum(['Kwai-Kolors/Kolors'])
