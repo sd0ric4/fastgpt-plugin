@@ -139,14 +139,7 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     body: JSON.stringify(body)
   });
 
-  const text = await response.json();
-  const data = (() => {
-    try {
-      return JSON.parse(text);
-    } catch {
-      return text;
-    }
-  })();
+  const data = await response.json();
 
   if (!response.ok) {
     const errorHandler = ERROR_MESSAGES[response.status as keyof typeof ERROR_MESSAGES];
