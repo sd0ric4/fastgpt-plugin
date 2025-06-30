@@ -54,7 +54,8 @@ export default defineTool({
           key: 'time_period',
           label: '搜索日期范围',
           valueType: WorkflowIOValueTypeEnum.string,
-          renderTypeList: [FlowNodeInputTypeEnum.reference, FlowNodeInputTypeEnum.select],
+          renderTypeList: [FlowNodeInputTypeEnum.select],
+          defaultValue: 'last_year',
           list: [
             { label: 'last_hour', value: 'last_hour' },
             { label: 'last_day', value: 'last_day' },
