@@ -16,6 +16,5 @@ export default defineToolSet({
     'zh-CN': '提供 ArXiv 论文检索相关功能，包括关键词搜索、排序等',
     en: 'Provides ArXiv paper search functionalities, including keyword search, sorting, etc.'
   },
-  author: 'FastGPT',
   children: [keywordSearch, authorSearch, arxivIDSearch, abstractExtraction, metadataExtraction]
 });
