@@ -45,21 +45,3 @@ export async function copyToolIcons(options: CopyIconOptions): Promise<number> {
 
   return copiedCount;
 }
-
-/**
- * Find the icon file for a specific tool
- * @param toolId Tool ID, usually the directory name of the tool
- * @param publicImgsDir public/imgs/tools directory, defaults to process.cwd()/public/imgs/tools
- * @returns The URL path to the icon file, or an empty string if not found
- */
-export function findToolIcon(toolId: string, publicImgsDir?: string): string {
-  // Default to the public/imgs/tools directory if not provided
-  const imgsDir = publicImgsDir || path.join(process.cwd(), 'public', 'imgs', 'tools');
-
-  // Check if the directory exists
-  const iconPath = path.join(imgsDir, `${toolId}.svg`);
-  if (fs.existsSync(iconPath)) {
-    return `/imgs/tools/${toolId}.svg`;
-  }
-  return '';
-}
