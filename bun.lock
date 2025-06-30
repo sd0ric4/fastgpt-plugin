@@ -225,7 +225,7 @@
         "typescript": "^5.0.0",
       },
     },
-    "packages/tool/packages/gitHub": {
+    "packages/tool/packages/github": {
       "name": "fastgpt-tools-GitHub",
       "dependencies": {
         "zod": "^3.24.2",
@@ -913,7 +913,7 @@
 
     "fastgpt-tools-DingTalkWebhook": ["fastgpt-tools-DingTalkWebhook@workspace:packages/tool/packages/DingTalkWebhook"],
 
-    "fastgpt-tools-GitHub": ["fastgpt-tools-GitHub@workspace:packages/tool/packages/gitHub"],
+    "fastgpt-tools-GitHub": ["fastgpt-tools-GitHub@workspace:packages/tool/packages/github"],
 
     "fastgpt-tools-SearchApi": ["fastgpt-tools-SearchApi@workspace:packages/tool/packages/searchApi"],
 
