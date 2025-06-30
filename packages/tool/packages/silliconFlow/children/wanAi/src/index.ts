@@ -1,4 +1,5 @@
 import { addLog } from '@/utils/log';
+import { delay } from '@tool/utils/delay';
 import { z } from 'zod';
 
 export const InputType = z
@@ -54,10 +55,6 @@ export const OutputType = z.object({
     .describe('Result object containing videos, timings, and seed')
 });
 
-async function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
   addLog.error('Call Silicon Flow video generation API, params:', { props });
   const { url, authorization, ...params } = props;
@@ -92,7 +89,7 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
   let statusRes: Response | undefined = undefined;
   let statusData: any = undefined;
   for (let i = 0; i < 180; i++) {
-    await sleep(3000);
+    await delay(3000);
     statusRes = await fetch(`${url}/status`, {
       method: 'POST',
       headers: {
