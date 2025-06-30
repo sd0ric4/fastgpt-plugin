@@ -109,11 +109,11 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
   const { url, authorization, ...params } = props;
 
   // image 字段自动转 base64
-  let image = params.image;
-  if (image && !image.startsWith('data:image/')) {
-    // 是 url，自动转 base64
-    image = await urlToBase64(image);
-  }
+  const image = await (async () => {
+    if (!params.image) return undefined;
+    if (params.image.startsWith('data:image/')) return params.image;
+    return await urlToBase64(params.image);
+  })();
 
   // 构建请求体，过滤掉 undefined 值
   const body = Object.fromEntries(
