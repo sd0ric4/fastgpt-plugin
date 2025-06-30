@@ -4,10 +4,6 @@ import { z } from 'zod';
 
 export const InputType = z
   .object({
-    url: z
-      .string()
-      .describe('Base URL for Silicon Flow video API, e.g., https://api.siliconflow.cn/v1/video')
-      .default('https://api.siliconflow.cn/v1/video'),
     authorization: z.string().describe('API token (without Bearer), e.g., sk-xxxx'),
     model: z
       .enum([
@@ -58,7 +54,8 @@ export const OutputType = z.object({
 
 export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
   addLog.error('Call Silicon Flow video generation API, params:', { props });
-  const { url, authorization, ...params } = props;
+  const url = 'https://api.siliconflow.cn/v1/video';
+  const { authorization, ...params } = props;
 
   const submitBody = Object.fromEntries(
     Object.entries({

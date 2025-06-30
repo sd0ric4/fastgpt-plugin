@@ -2,12 +2,6 @@ import { z } from 'zod';
 
 export const InputType = z
   .object({
-    url: z
-      .string()
-      .describe(
-        'Base URL for Silicon Flow painting API, e.g., https://api.siliconflow.cn/v1/images/generations'
-      )
-      .default('https://api.siliconflow.cn/v1/images/generations'),
     authorization: z.string().describe('API token (without Bearer), e.g., sk-xxxx'),
     model: z
       .enum(['Kwai-Kolors/Kolors'])
@@ -106,8 +100,9 @@ export async function urlToBase64(imageUrl: string): Promise<string> {
 }
 
 export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
-  // 自动补全默认值
-  const { url, authorization, ...params } = props;
+  // url 直接硬编码
+  const url = 'https://api.siliconflow.cn/v1/images/generations';
+  const { authorization, ...params } = props;
 
   // image 字段自动转 base64
   const image = await (async () => {
