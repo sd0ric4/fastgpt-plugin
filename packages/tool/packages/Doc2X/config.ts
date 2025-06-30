@@ -13,6 +13,5 @@ export default defineToolSet({
     en: 'Send an image or PDF file to Doc2X for parsing and return the LaTeX formula in markdown format.'
   },
   icon: 'plugins/doc2x',
-  author: 'FastGPT',
   children: [PDF2text]
 });

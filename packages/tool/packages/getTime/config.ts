@@ -12,7 +12,6 @@ export default defineTool({
     'zh-CN': '获取当前时间',
     en: 'Get current time'
   },
-  author: 'FastGPT',
   icon: 'core/workflow/template/getTime',
   versionList: [
     {

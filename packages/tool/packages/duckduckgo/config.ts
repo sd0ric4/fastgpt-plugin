@@ -16,6 +16,5 @@ export default defineToolSet({
     en: 'DuckDuckGo Service, including network search, image search, news search, etc.'
   },
   icon: 'core/workflow/template/duckduckgo',
-  author: 'FastGPT',
   children: [search, searchImg, searchNews, searchVideo]
 });
