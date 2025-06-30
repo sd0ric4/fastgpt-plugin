@@ -8,7 +8,6 @@ import { ToolTypeEnum } from '@tool/type/tool';
 
 export default defineTool({
   type: ToolTypeEnum.search,
-  icon: 'plugins/arxiv',
   name: {
     'zh-CN': 'ArXiv 作者论文检索',
     en: 'ArXiv Author Paper Search'
