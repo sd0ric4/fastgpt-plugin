@@ -106,7 +106,6 @@ export async function urlToBase64(imageUrl: string): Promise<string> {
 
 export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
   // 自动补全默认值
-  props = InputType.parse(props);
   const { url, authorization, ...params } = props;
 
   // image 字段自动转 base64
@@ -160,5 +159,5 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     return Promise.reject(message);
   }
 
-  return OutputType.parse(data);
+  return data;
 }

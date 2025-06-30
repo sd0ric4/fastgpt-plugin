@@ -59,7 +59,6 @@ async function sleep(ms: number) {
 }
 
 export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
-  props = InputType.parse(props);
   addLog.error('Call Silicon Flow video generation API, params:', { props });
   const { url, authorization, ...params } = props;
 
@@ -112,5 +111,5 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     return Promise.reject(`Failed to get result: ${statusData?.message || statusRes?.statusText}`);
   }
 
-  return OutputType.parse(statusData);
+  return statusData;
 }
