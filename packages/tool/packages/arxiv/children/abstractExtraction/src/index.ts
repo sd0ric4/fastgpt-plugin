@@ -97,5 +97,5 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     link: getLink(entry.link, entry.id)
   };
 
-  return OutputType.parse({ abstract });
+  return { abstract };
 }
