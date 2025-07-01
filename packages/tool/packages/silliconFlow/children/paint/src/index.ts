@@ -54,16 +54,14 @@ export const InputType = z
 export const OutputType = z.object({
   images: z
     .array(
-      z.object({
-        url: z
-          .string()
-          .url()
-          .describe(
-            'URL of the generated image, valid for one hour. Please download and save promptly to avoid expiration.'
-          )
-      })
+      z
+        .string()
+        .url()
+        .describe(
+          'URL of the generated image, valid for one hour. Please download and save promptly to avoid expiration.'
+        )
     )
-    .describe('List of generated images, including image URLs and other information'),
+    .describe('List of generated image URLs'),
   timings: z
     .object({
       inference: z.number().describe('Inference time in milliseconds')

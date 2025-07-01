@@ -38,12 +38,8 @@ export const OutputType = z.object({
   results: z
     .object({
       videos: z
-        .array(
-          z.object({
-            url: z.string().url().describe('URL of the generated video, valid for 1 hour')
-          })
-        )
-        .describe('List of generated videos'),
+        .array(z.string().url().describe('URL of the generated video, valid for 1 hour'))
+        .describe('List of generated video URLs'),
       timings: z
         .object({ inference: z.number().describe('Inference time') })
         .describe('Timing information'),
