@@ -52,13 +52,7 @@ export const InputType = z
   .describe('Silicon Flow painting API parameters');
 
 export const OutputType = z.object({
-  images: z
-    .array(
-      z.object({
-        url: z.string().url()
-      })
-    )
-    .describe('List of generated images, including image URLs and other information'),
+  images: z.array(z.string().url()).describe('List of generated image URLs'),
   timings: z
     .object({
       inference: z.number().describe('Inference time in milliseconds')
