@@ -30,8 +30,6 @@ type GetUploadBufferResponse = { buffer: Buffer; filename: string };
 export class S3Service {
   private minioClient: Minio.Client;
   private config: FileConfig;
-  private isInitialized: boolean = false;
-  private initPromise: Promise<void>;
 
   constructor(config?: Partial<FileConfig>) {
     this.config = { ...defaultFileConfig, ...config };
@@ -44,96 +42,62 @@ export class S3Service {
       accessKey: this.config.accessKey,
       secretKey: this.config.secretKey
     });
-
-    this.initPromise = this.initialize();
   }
 
-  private async initialize(): Promise<void> {
-    if (this.isInitialized) return;
-
+  static async initialize(config?: Partial<FileConfig>): Promise<S3Service> {
+    const service = new S3Service(config);
     try {
-      await this.initBucket();
-      this.isInitialized = true;
-      addLog.info('FileService initialized successfully');
-    } catch (error) {
-      addLog.error('FileService initialization failed:', error);
-      return Promise.reject(
-        new Error(
-          `Failed to initialize bucket: ${error instanceof Error ? error.message : String(error)}`
-        )
-      );
-    }
-  }
-
-  private async initBucket() {
-    try {
-      addLog.info(`Checking bucket: ${this.config.bucket}`);
-      const bucketExists = await this.minioClient.bucketExists(this.config.bucket);
+      addLog.info(`Checking bucket: ${service.config.bucket}`);
+      const bucketExists = await service.minioClient.bucketExists(service.config.bucket);
       if (!bucketExists) {
-        addLog.info(`Creating bucket: ${this.config.bucket}`);
-        await this.minioClient.makeBucket(this.config.bucket);
+        addLog.info(`Creating bucket: ${service.config.bucket}`);
+        await service.minioClient.makeBucket(service.config.bucket);
       }
-      await this.setBucketDownloadOnly();
+
+      // 同时设置访问策略和生命周期规则
+      await Promise.all([
+        service.minioClient.setBucketPolicy(
+          service.config.bucket,
+          JSON.stringify({
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Principal: '*',
+                Action: ['s3:GetObject'],
+                Resource: [`arn:aws:s3:::${service.config.bucket}/*`]
+              }
+            ]
+          })
+        ),
+        service.minioClient.setBucketLifecycle(service.config.bucket, {
+          Rule: [
+            {
+              ID: 'AutoDeleteRule',
+              Status: 'Enabled',
+              Expiration: {
+                Days: service.config.retentionDays,
+                DeleteMarker: false,
+                DeleteAll: false
+              }
+            }
+          ]
+        })
+      ]);
+
+      addLog.info(
+        `Bucket ${service.config.bucket} configured successfully with ${service.config.retentionDays} days retention`
+      );
+      addLog.info('FileService initialized successfully');
+      return service;
     } catch (error) {
-      addLog.error('Failed to initialize bucket:', error);
       if (error instanceof Error && error.message.includes('Method Not Allowed')) {
         addLog.warn('Method Not Allowed - bucket may exist with different permissions');
-        return;
+        return service;
       }
-      return Promise.reject(
-        new Error(
-          `Failed to initialize bucket: ${error instanceof Error ? error.message : String(error)}`
-        )
-      );
-    }
-  }
-
-  private async setBucketDownloadOnly() {
-    try {
-      const accessPolicy = {
-        Version: '2012-10-17',
-        Statement: [
-          {
-            Effect: 'Allow',
-            Principal: '*',
-            Action: ['s3:GetObject'],
-            Resource: [`arn:aws:s3:::${this.config.bucket}/*`]
-          }
-        ]
-      };
-      await this.minioClient.setBucketPolicy(this.config.bucket, JSON.stringify(accessPolicy));
-      await this.setBucketLifecycle();
-      addLog.info(`Bucket ${this.config.bucket} policies set successfully`);
-    } catch (error) {
-      return Promise.reject(
-        new Error(
-          `Failed to set bucket policies: ${error instanceof Error ? error.message : String(error)}`
-        )
-      );
-    }
-  }
-  private async setBucketLifecycle() {
-    try {
-      const lifecycleConfig: Minio.LifecycleConfig = {
-        Rule: [
-          {
-            ID: 'AutoDeleteRule',
-            Status: 'Enabled',
-            Expiration: {
-              Days: this.config.retentionDays,
-              DeleteMarker: false,
-              DeleteAll: false
-            }
-          }
-        ]
-      };
-      await this.minioClient.setBucketLifecycle(this.config.bucket, lifecycleConfig);
-      addLog.info(`Lifecycle policy set: ${this.config.retentionDays} days retention`);
-    } catch (error) {
-      return Promise.reject(
-        new Error(
-          `Failed to set lifecycle policy: ${error instanceof Error ? error.message : String(error)}`
-        )
+      addLog.error('FileService initialization failed:', error);
+      throw new Error(
+        `Failed to initialize bucket: ${error instanceof Error ? error.message : String(error)}`
       );
     }
   }

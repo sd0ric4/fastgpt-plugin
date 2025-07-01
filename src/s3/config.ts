@@ -35,8 +35,8 @@ export const FileMetadataSchema = z.object({
 
 export type FileMetadata = z.infer<typeof FileMetadataSchema>;
 
-export const initS3Server = () => {
-  global.s3Server = new S3Service(defaultFileConfig);
+export const initS3Server = async () => {
+  global.s3Server = await S3Service.initialize(defaultFileConfig);
 };
 
 declare global {
