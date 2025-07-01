@@ -43,7 +43,6 @@ export const OutputType = z.object({
             url: z.string().url()
           })
         )
-        .transform((arr) => arr.map((item) => item.url))
         .describe('List of generated video URLs'),
       timings: z
         .object({ inference: z.number().describe('Inference time') })
@@ -107,5 +106,14 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     return Promise.reject(`Failed to get result: ${statusData?.message || statusRes?.statusText}`);
   }
 
-  return statusData;
+  // 保证 results.videos 字段为 string[]
+  return {
+    ...statusData,
+    results: {
+      ...statusData.results,
+      videos: Array.isArray(statusData.results?.videos)
+        ? statusData.results.videos.map((item: any) => (typeof item === 'string' ? item : item.url))
+        : []
+    }
+  };
 }

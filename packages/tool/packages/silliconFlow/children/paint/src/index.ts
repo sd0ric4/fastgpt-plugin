@@ -58,7 +58,6 @@ export const OutputType = z.object({
         url: z.string().url()
       })
     )
-    .transform((arr) => arr.map((item) => item.url))
     .describe('List of generated image URLs'),
   timings: z
     .object({
@@ -144,5 +143,11 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     return Promise.reject(message);
   }
 
-  return data;
+  // 保证 images 字段为 string[]
+  return {
+    ...data,
+    images: Array.isArray(data.images)
+      ? data.images.map((item: any) => (typeof item === 'string' ? item : item.url))
+      : []
+  };
 }
