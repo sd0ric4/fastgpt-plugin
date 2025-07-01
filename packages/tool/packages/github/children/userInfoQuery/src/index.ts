@@ -44,13 +44,10 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
   const { username, token } = props;
   const octokit = new Octokit(token ? { auth: token } : {});
 
-  // 用户基本信息
   const { data: userInfo } = await octokit.users.getByUsername({ username });
 
-  // 用户公开仓库
   const { data: repos } = await octokit.repos.listForUser({ username, per_page: 100 });
 
-  // 只保留需要的字段，并处理 number 字段的 undefined
   const mappedRepos = Array.isArray(repos)
     ? repos.map((repo) => ({
         name: repo.name,

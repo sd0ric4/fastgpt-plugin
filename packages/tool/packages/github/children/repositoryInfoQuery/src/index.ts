@@ -36,10 +36,8 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
   const { owner, repo, token } = props;
   const octokit = new Octokit(token ? { auth: token } : {});
 
-  // 1. 仓库基本信息
   const { data: info } = await octokit.repos.get({ owner, repo });
 
-  // 2. README（markdown 原文）
   let readme: string | null = null;
   try {
     const { data: readmeData } = await octokit.repos.getReadme({ owner, repo });
@@ -50,7 +48,6 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     readme = null;
   }
 
-  // 3. license
   let license = null;
   if (info.license) {
     license = {
