@@ -106,7 +106,6 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     return Promise.reject(`Failed to get result: ${statusData?.message || statusRes?.statusText}`);
   }
 
-  // 保证 results.videos 字段为 string[]
   return {
     ...statusData,
     results: {

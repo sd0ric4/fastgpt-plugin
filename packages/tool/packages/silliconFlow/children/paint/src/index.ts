@@ -143,7 +143,6 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     return Promise.reject(message);
   }
 
-  // 保证 images 字段为 string[]
   return {
     ...data,
     images: Array.isArray(data.images)
