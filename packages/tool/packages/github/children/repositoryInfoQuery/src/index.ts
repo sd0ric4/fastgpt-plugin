@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Octokit } from '@octokit/rest';
 
 export const InputType = z.object({
   owner: z.string(),
@@ -31,43 +32,35 @@ export const OutputType = z.object({
     .nullable()
 });
 
-async function fetchGithub(url: string, token?: string) {
-  const headers: Record<string, string> = {
-    Accept: 'application/vnd.github+json'
-  };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-  const res = await fetch(url, { headers });
-  if (!res.ok) throw new Error(`GitHub API error: ${res.status} ${res.statusText}`);
-  return res.json();
-}
-
 export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
   const { owner, repo, token } = props;
+  const octokit = new Octokit(token ? { auth: token } : {});
+
   // 1. 仓库基本信息
-  const info = await fetchGithub(`https://api.github.com/repos/${owner}/${repo}`, token);
+  const { data: info } = await octokit.repos.get({ owner, repo });
+
   // 2. README（markdown 原文）
   let readme: string | null = null;
   try {
-    const readmeData = await fetchGithub(
-      `https://api.github.com/repos/${owner}/${repo}/readme`,
-      token
-    );
+    const { data: readmeData } = await octokit.repos.getReadme({ owner, repo });
     if (readmeData && readmeData.content) {
       readme = Buffer.from(readmeData.content, 'base64').toString('utf-8');
     }
   } catch {
     readme = null;
   }
+
   // 3. license
   let license = null;
   if (info.license) {
     license = {
       key: info.license.key,
       name: info.license.name,
-      spdx_id: info.license.spdx_id,
+      spdx_id: info.license.spdx_id === null ? '' : info.license.spdx_id,
       url: info.license.url
     };
   }
+
   return {
     info: {
       full_name: info.full_name,

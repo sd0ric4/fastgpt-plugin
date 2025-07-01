@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Octokit } from '@octokit/rest';
 
 export const InputType = z.object({
   username: z.string(),
@@ -39,25 +40,34 @@ export const OutputType = z.object({
   )
 });
 
-async function fetchGithub(url: string, token?: string) {
-  const headers: Record<string, string> = {
-    Accept: 'application/vnd.github+json'
-  };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-  const res = await fetch(url, { headers });
-  if (!res.ok) throw new Error(`GitHub API error: ${res.status} ${res.statusText}`);
-  return res.json();
-}
-
 export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
   const { username, token } = props;
-  const userInfo = await fetchGithub(`https://api.github.com/users/${username}`, token);
-  const repos = await fetchGithub(
-    `https://api.github.com/users/${username}/repos?per_page=100`,
-    token
-  );
+  const octokit = new Octokit(token ? { auth: token } : {});
+
+  // 用户基本信息
+  const { data: userInfo } = await octokit.users.getByUsername({ username });
+
+  // 用户公开仓库
+  const { data: repos } = await octokit.repos.listForUser({ username, per_page: 100 });
+
+  // 只保留需要的字段，并处理 number 字段的 undefined
+  const mappedRepos = Array.isArray(repos)
+    ? repos.map((repo) => ({
+        name: repo.name,
+        full_name: repo.full_name,
+        html_url: repo.html_url,
+        description: repo.description ?? null,
+        stargazers_count: repo.stargazers_count ?? 0,
+        forks_count: repo.forks_count ?? 0,
+        language: repo.language ?? null,
+        created_at: repo.created_at ?? '',
+        updated_at: repo.updated_at ?? '',
+        pushed_at: repo.pushed_at ?? ''
+      }))
+    : [];
+
   return {
     userInfo,
-    repos: Array.isArray(repos) ? repos : []
+    repos: mappedRepos
   };
 }
