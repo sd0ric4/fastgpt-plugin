@@ -98,16 +98,16 @@ export type InputConfigType = z.infer<typeof InputConfigSchema>;
 
 // Define InputType schema
 export const InputSchema = z.object({
+  key: z.string(),
+  label: z.string(),
   referencePlaceholder: z.string().optional(),
   placeholder: z.string().optional(),
   defaultValue: z.any().optional(),
   selectedTypeIndex: z.number().optional(),
   renderTypeList: z.array(z.nativeEnum(FlowNodeInputTypeEnum)),
-  key: z.string(),
   valueType: z.nativeEnum(WorkflowIOValueTypeEnum),
   valueDesc: z.string().optional(),
   value: z.unknown().optional(),
-  label: z.string(),
   description: z.string().optional(),
   required: z.boolean().optional(),
   toolDescription: z.string().optional(),
@@ -153,8 +153,8 @@ export const InputSchema = z.object({
 export type InputType = z.infer<typeof InputSchema>;
 
 export const OutputSchema = z.object({
-  id: z.string(),
-  type: z.nativeEnum(FlowNodeOutputTypeEnum),
+  id: z.string().optional(),
+  type: z.nativeEnum(FlowNodeOutputTypeEnum).optional(),
   key: z.string(),
   valueType: z.nativeEnum(WorkflowIOValueTypeEnum),
   valueDesc: z.string().optional(),
@@ -164,4 +164,5 @@ export const OutputSchema = z.object({
   defaultValue: z.any().optional(),
   required: z.boolean().optional()
 });
+
 export type OutputType = z.infer<typeof OutputSchema>;
