@@ -43,7 +43,7 @@ export const OutputType = z.object({
             url: z.string().url()
           })
         )
-        .describe('List of generated video URLs'),
+        .describe('URL of the generated video, valid for 1 hour'),
       timings: z
         .object({ inference: z.number().describe('Inference time') })
         .describe('Timing information'),

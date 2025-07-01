@@ -58,7 +58,7 @@ export const OutputType = z.object({
         url: z.string().url()
       })
     )
-    .describe('List of generated image URLs'),
+    .describe('List of generated images, including image URLs and other information'),
   timings: z
     .object({
       inference: z.number().describe('Inference time in milliseconds')
