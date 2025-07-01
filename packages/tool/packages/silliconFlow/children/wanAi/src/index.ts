@@ -40,10 +40,10 @@ export const OutputType = z.object({
       videos: z
         .array(
           z.object({
-            url: z.string().url().describe('URL of the generated video, valid for 1 hour')
+            url: z.string().url()
           })
         )
-        .describe('List of generated videos'),
+        .describe('URL of the generated video, valid for 1 hour'),
       timings: z
         .object({ inference: z.number().describe('Inference time') })
         .describe('Timing information'),
@@ -106,5 +106,13 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     return Promise.reject(`Failed to get result: ${statusData?.message || statusRes?.statusText}`);
   }
 
-  return statusData;
+  return {
+    ...statusData,
+    results: {
+      ...statusData.results,
+      videos: Array.isArray(statusData.results?.videos)
+        ? statusData.results.videos.map((item: any) => (typeof item === 'string' ? item : item.url))
+        : []
+    }
+  };
 }

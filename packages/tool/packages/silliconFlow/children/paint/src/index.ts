@@ -55,12 +55,7 @@ export const OutputType = z.object({
   images: z
     .array(
       z.object({
-        url: z
-          .string()
-          .url()
-          .describe(
-            'URL of the generated image, valid for one hour. Please download and save promptly to avoid expiration.'
-          )
+        url: z.string().url()
       })
     )
     .describe('List of generated images, including image URLs and other information'),
@@ -148,5 +143,10 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     return Promise.reject(message);
   }
 
-  return data;
+  return {
+    ...data,
+    images: Array.isArray(data.images)
+      ? data.images.map((item: any) => (typeof item === 'string' ? item : item.url))
+      : []
+  };
 }
