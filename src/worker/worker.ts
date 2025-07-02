@@ -15,7 +15,7 @@ console.log = (...args: any[]) => {
 
 const basePath = isProd
   ? process.env.TOOLS_DIR || path.join(process.cwd(), 'dist', 'tools')
-  : path.join(process.cwd(), 'packages', 'tool', 'packages');
+  : path.join(process.cwd(), 'modules', 'tool', 'packages');
 
 parentPort?.on('message', async (params: Main2WorkerMessageType) => {
   const { type, data } = params;
