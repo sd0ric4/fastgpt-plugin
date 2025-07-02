@@ -33,7 +33,6 @@ export class S3Service {
 
   constructor(config?: Partial<FileConfig>) {
     this.config = { ...defaultFileConfig, ...config };
-    addLog.info(`Initializing MinIO client: ${this.config.endpoint}:${this.config.port}`);
 
     this.minioClient = new Minio.Client({
       endPoint: this.config.endpoint,
@@ -44,7 +43,7 @@ export class S3Service {
     });
   }
 
-  static async initialize(config?: Partial<FileConfig>): Promise<S3Service> {
+  async initialize(config?: Partial<FileConfig>): Promise<S3Service> {
     const service = new S3Service(config);
     try {
       addLog.info(`Checking bucket: ${service.config.bucket}`);
@@ -92,13 +91,11 @@ export class S3Service {
       return service;
     } catch (error) {
       if (error instanceof Error && error.message.includes('Method Not Allowed')) {
-        addLog.warn('Method Not Allowed - bucket may exist with different permissions');
-        return service;
+        addLog.warn(
+          'Method Not Allowed - bucket may exist with different permissions,check document for more details'
+        );
       }
-      addLog.error('FileService initialization failed:', error);
-      throw new Error(
-        `Failed to initialize bucket: ${error instanceof Error ? error.message : String(error)}`
-      );
+      return Promise.reject(error);
     }
   }
 
