@@ -4,6 +4,7 @@ import { defaultFileConfig, type FileConfig, type FileMetadata } from './config'
 import * as fs from 'fs';
 import * as path from 'path';
 import { z } from 'zod';
+import { addLog } from '@/utils/log';
 
 export const FileInputSchema = z
   .object({
@@ -40,6 +41,62 @@ export class S3Service {
       accessKey: this.config.accessKey,
       secretKey: this.config.secretKey
     });
+  }
+
+  async initialize(config?: Partial<FileConfig>): Promise<S3Service> {
+    const service = new S3Service(config);
+    try {
+      addLog.info(`Checking bucket: ${service.config.bucket}`);
+      const bucketExists = await service.minioClient.bucketExists(service.config.bucket);
+      if (!bucketExists) {
+        addLog.info(`Creating bucket: ${service.config.bucket}`);
+        await service.minioClient.makeBucket(service.config.bucket);
+      }
+
+      // 同时设置访问策略和生命周期规则
+      await Promise.all([
+        service.minioClient.setBucketPolicy(
+          service.config.bucket,
+          JSON.stringify({
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Principal: '*',
+                Action: ['s3:GetObject'],
+                Resource: [`arn:aws:s3:::${service.config.bucket}/*`]
+              }
+            ]
+          })
+        ),
+        service.minioClient.setBucketLifecycle(service.config.bucket, {
+          Rule: [
+            {
+              ID: 'AutoDeleteRule',
+              Status: 'Enabled',
+              Expiration: {
+                Days: service.config.retentionDays,
+                DeleteMarker: false,
+                DeleteAll: false
+              }
+            }
+          ]
+        })
+      ]);
+
+      addLog.info(
+        `Bucket ${service.config.bucket} configured successfully with ${service.config.retentionDays} days retention`
+      );
+      addLog.info('FileService initialized successfully');
+      return service;
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('Method Not Allowed')) {
+        addLog.warn(
+          'Method Not Allowed - bucket may exist with different permissions,check document for more details'
+        );
+      }
+      return Promise.reject(error);
+    }
   }
 
   private generateFileId(): string {
