@@ -35,7 +35,7 @@ if (name.length > 20) {
 }
 
 // 1. Create directory
-const toolDir = path.join(process.cwd(), 'packages', 'tool', 'packages', name);
+const toolDir = path.join(process.cwd(), 'modules', 'tool', 'packages', name);
 if (fs.existsSync(toolDir)) {
   console.error('Tool already exists');
   process.exit(1);
