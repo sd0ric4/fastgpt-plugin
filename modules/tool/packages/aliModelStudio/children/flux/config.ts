@@ -8,13 +8,13 @@ import {
 
 export default defineTool({
   name: {
-    'zh-CN': '阿里云百炼通义万相文生图v2',
-    en: 'Alibaba Qwen Wanx Text-to-Image'
+    'zh-CN': '阿里云百炼FLUX文生图',
+    en: 'Alibaba Cloud FLUX Text-to-Image'
   },
   description: {
     'zh-CN':
-      '使用阿里云百炼通义万相模型将文本描述转换为图像。支持多种模型、自定义尺寸、智能提示词改写等功能。',
-    en: 'Convert text descriptions to images using Alibaba Qwen Wanx models. Supports multiple models, custom sizes, intelligent prompt enhancement, and more.'
+      '使用阿里云百炼FLUX模型将文本描述转换为图像。支持flux-schnell、flux-dev、flux-merged等模型，提供高质量的图像生成能力。',
+    en: 'Convert text descriptions to images using Alibaba Cloud FLUX models. Supports flux-schnell, flux-dev, flux-merged models with high-quality image generation capabilities.'
   },
   versionList: [
     {
@@ -38,8 +38,8 @@ export default defineTool({
         },
         {
           key: 'prompt',
-          label: '正向提示词',
-          description: '描述期望生成的图像内容，支持中英文，长度不超过800个字符',
+          label: '文本提示词',
+          description: '文本内容，支持中英文，中文不超过500个字符，英文不超过500个单词',
           renderTypeList: [FlowNodeInputTypeEnum.textarea, FlowNodeInputTypeEnum.reference],
           valueType: WorkflowIOValueTypeEnum.string,
           required: true
@@ -47,30 +47,23 @@ export default defineTool({
         {
           key: 'model',
           label: '模型名称',
-          description: '选择要使用的通义万相模型',
+          description: '选择要使用的FLUX模型',
           renderTypeList: [FlowNodeInputTypeEnum.select],
           valueType: WorkflowIOValueTypeEnum.string,
           list: [
             {
-              label: 'wanx2.1-t2i-turbo (快速版)',
-              value: 'wanx2.1-t2i-turbo'
+              label: 'flux-schnell (快速模型)',
+              value: 'flux-schnell'
             },
             {
-              label: 'wanx2.1-t2i-plus (精细版)',
-              value: 'wanx2.1-t2i-plus'
+              label: 'flux-dev (开发模型)',
+              value: 'flux-dev'
             },
             {
-              label: 'wanx2.0-t2i-turbo (性价比版)',
-              value: 'wanx2.0-t2i-turbo'
+              label: 'flux-merged (混合模型)',
+              value: 'flux-merged'
             }
           ]
-        },
-        {
-          key: 'negative_prompt',
-          label: '反向提示词',
-          description: '描述不希望在画面中看到的内容，长度不超过500个字符',
-          renderTypeList: [FlowNodeInputTypeEnum.textarea, FlowNodeInputTypeEnum.reference],
-          valueType: WorkflowIOValueTypeEnum.string
         },
         {
           key: 'size',
@@ -79,46 +72,53 @@ export default defineTool({
           renderTypeList: [FlowNodeInputTypeEnum.select],
           valueType: WorkflowIOValueTypeEnum.string,
           list: [
-            { label: '512×512', value: '512*512' },
             { label: '512×1024', value: '512*1024' },
-            { label: '768×768', value: '768*768' },
+            { label: '768×512', value: '768*512' },
             { label: '768×1024', value: '768*1024' },
-            { label: '1024×512', value: '1024*512' },
-            { label: '1024×768', value: '1024*768' },
-            { label: '1024×1024 (默认)', value: '1024*1024' },
-            { label: '1280×720', value: '1280*720' },
-            { label: '1440×720', value: '1440*720' }
+            { label: '1024×576', value: '1024*576' },
+            { label: '576×1024', value: '576*1024' },
+            { label: '1024×1024 (默认)', value: '1024*1024' }
           ]
-        },
-        {
-          key: 'n',
-          label: '生成数量',
-          description: '生成图片的数量，取值范围为1~4张',
-          renderTypeList: [FlowNodeInputTypeEnum.numberInput],
-          valueType: WorkflowIOValueTypeEnum.number,
-          min: 1,
-          max: 4
         },
         {
           key: 'seed',
           label: '随机种子',
-          description: '用于控制模型生成内容的随机性，相同种子会生成相似结果',
+          description: '图片生成时候的种子值，如果不提供，则算法自动用一个随机生成的数字作为种子',
+          renderTypeList: [FlowNodeInputTypeEnum.numberInput],
+          valueType: WorkflowIOValueTypeEnum.number,
+          min: 0
+        },
+        {
+          key: 'steps',
+          label: '推理步数',
+          description:
+            '图片生成的推理步数，如果不提供，则默认为30。flux-schnell模型官方默认steps为4，flux-dev模型官方默认steps为50',
+          renderTypeList: [FlowNodeInputTypeEnum.numberInput],
+          valueType: WorkflowIOValueTypeEnum.number,
+          min: 1
+        },
+        {
+          key: 'guidance',
+          label: '指导度量值',
+          description:
+            '用于在图像生成过程中调整模型的创造性与文本指导的紧密度。较高的值会使得生成的图像更忠于文本提示，但可能减少多样性；较低的值则允许更多创造性，增加图像变化。默认值为3.5',
           renderTypeList: [FlowNodeInputTypeEnum.numberInput],
           valueType: WorkflowIOValueTypeEnum.number,
           min: 0,
-          max: 2147483647
+          step: 0.1
         },
         {
-          key: 'prompt_extend',
-          label: '智能改写',
-          description: '是否开启prompt智能改写，开启后会使用大模型对输入prompt进行智能改写',
+          key: 'offload',
+          label: 'GPU卸载',
+          description:
+            '是否在采样过程中将部分计算密集型组件临时从GPU卸载到CPU，以减轻内存压力或提升效率。默认为False',
           renderTypeList: [FlowNodeInputTypeEnum.switch],
           valueType: WorkflowIOValueTypeEnum.boolean
         },
         {
-          key: 'watermark',
-          label: '添加水印',
-          description: '是否添加AI生成水印标识，水印位于图片右下角',
+          key: 'add_sampling_metadata',
+          label: '添加元数据',
+          description: '是否在输出的图像文件中嵌入生成时使用的提示文本等元数据信息。默认为True',
           renderTypeList: [FlowNodeInputTypeEnum.switch],
           valueType: WorkflowIOValueTypeEnum.boolean
         }
@@ -128,7 +128,7 @@ export default defineTool({
           valueType: WorkflowIOValueTypeEnum.arrayString,
           key: 'images',
           label: '生成的图片',
-          description: '生成图片的URL数组'
+          description: '包含图片URL的数组'
         },
         {
           valueType: WorkflowIOValueTypeEnum.string,
