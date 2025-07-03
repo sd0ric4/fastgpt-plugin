@@ -7,7 +7,10 @@ export const InputType = z.object({
 });
 
 export const OutputType = z.object({
-  result: z.string()
+  result: z.object({
+    code: z.number(),
+    msg: z.string()
+  })
 });
 
 function format(content: string) {
@@ -46,6 +49,6 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     body: JSON.stringify(data)
   });
   return {
-    result: await response.text()
+    result: await response.json()
   };
 }
