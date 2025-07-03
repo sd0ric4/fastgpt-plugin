@@ -2,67 +2,73 @@ import { z } from 'zod';
 import { getErrText } from '@tool/utils/err';
 import { delay } from '@tool/utils/delay';
 
-// FLUX模型枚举
+// FLUX model enum
 const ModelEnum = z.enum([
-  'flux-schnell', // FLUX.1 [schnell] 少步模型，生成速度快，视觉质量优秀
-  'flux-dev', // FLUX.1 [dev] 面向非商业应用的开源权重模型
-  'flux-merged' // FLUX.1-merged 结合DEV和Schnell优势的模型
+  'flux-schnell', // FLUX.1 [schnell] Few-step model, fast generation, excellent visual quality
+  'flux-dev', // FLUX.1 [dev] Open-source model for non-commercial applications
+  'flux-merged' // FLUX.1-merged Combines advantages of DEV and Schnell models
 ]);
 
-// 图像尺寸枚举
+// Image size enum
 const SizeEnum = z.enum(['512*1024', '768*512', '768*1024', '1024*576', '576*1024', '1024*1024']);
 
 export const InputType = z.object({
-  apiKey: z.string().describe('阿里云百炼API Key'),
-  prompt: z.string().describe('文本内容，支持中英文，中文不超过500个字符，英文不超过500个单词'),
-  model: ModelEnum.optional().default('flux-schnell').describe('模型名称'),
-  size: SizeEnum.optional().default('1024*1024').describe('生成图像的分辨率'),
+  apiKey: z.string().describe('Aliyun Bailian API Key'),
+  prompt: z
+    .string()
+    .describe(
+      'Text content, supports Chinese and English. No more than 500 Chinese characters or 500 English words.'
+    ),
+  model: ModelEnum.optional().default('flux-schnell').describe('Model name'),
+  size: SizeEnum.optional().default('1024*1024').describe('Resolution of the generated image'),
   seed: z
     .number()
     .int()
     .min(0)
     .optional()
-    .describe('图片生成时候的种子值，如果不提供，则算法自动用一个随机生成的数字作为种子'),
+    .describe('Seed value for image generation. If not provided, a random number will be used.'),
   steps: z
     .number()
     .int()
     .min(1)
     .optional()
     .describe(
-      '图片生成的推理步数，如果不提供，则默认为30。flux-schnell模型官方默认steps为4，flux-dev模型官方默认steps为50'
+      'Number of inference steps for image generation. Default is 30. Official default for flux-schnell is 4, for flux-dev is 50.'
     ),
   guidance: z
     .number()
     .min(0)
     .optional()
     .describe(
-      '指导度量值，用于在图像生成过程中调整模型的创造性与文本指导的紧密度。较高的值会使得生成的图像更忠于文本提示，但可能减少多样性；较低的值则允许更多创造性，增加图像变化。默认值为3.5'
+      'Guidance scale for adjusting the creativity and adherence to the prompt. Higher values make the image more faithful to the prompt but less diverse; lower values allow more creativity and variation. Default is 3.5.'
     ),
   offload: z
     .boolean()
     .optional()
     .describe(
-      '是否在采样过程中将部分计算密集型组件临时从GPU卸载到CPU，以减轻内存压力或提升效率。默认为False'
+      'Whether to temporarily offload some compute-intensive components from GPU to CPU during sampling to reduce memory pressure or improve efficiency. Default is False.'
     ),
   add_sampling_metadata: z
     .boolean()
     .optional()
-    .describe('是否在输出的图像文件中嵌入生成时使用的提示文本等元数据信息。默认为True')
+    .describe(
+      'Whether to embed prompt and other metadata in the output image file. Default is True.'
+    )
 });
 
 export const OutputType = z.object({
   images: z.array(z.string()).optional().describe('Array of generated image URLs'),
-  error: z.string().optional().describe('错误信息')
+  error: z.string().optional().describe('Error message')
 });
 
-// 任务状态枚举
+// Task status enum
 enum TaskStatus {
-  PENDING = 'PENDING', // 任务排队中
-  RUNNING = 'RUNNING', // 任务处理中
-  SUCCEEDED = 'SUCCEEDED', // 任务执行成功
-  FAILED = 'FAILED', // 任务执行失败
-  CANCELED = 'CANCELED', // 任务取消成功
-  UNKNOWN = 'UNKNOWN' // 任务不存在或状态未知
+  PENDING = 'PENDING', // Task is queued
+  RUNNING = 'RUNNING', // Task is processing
+  SUCCEEDED = 'SUCCEEDED', // Task succeeded
+  FAILED = 'FAILED', // Task failed
+  CANCELED = 'CANCELED', // Task was canceled
+  UNKNOWN = 'UNKNOWN' // Task does not exist or status unknown
 }
 
 export async function tool({
@@ -77,7 +83,7 @@ export async function tool({
   add_sampling_metadata
 }: z.infer<typeof InputType>): Promise<z.infer<typeof OutputType>> {
   try {
-    // 步骤1：创建任务获取任务ID
+    // Step 1: Create task and get task ID
     const requestBody = {
       model,
       input: {
@@ -109,16 +115,16 @@ export async function tool({
     const taskId = createTaskData?.output?.task_id;
     if (!taskId) {
       return {
-        error: '创建任务失败，未获取到任务ID'
+        error: 'Failed to create task, no task ID received.'
       };
     }
 
-    // 步骤2：轮询查询任务结果
-    const maxRetries = 60; // 最大重试次数，约3分钟 (60 * 3秒 = 180秒)
+    // Step 2: Poll for task result
+    const maxRetries = 60; // Maximum retries, about 3 minutes (60 * 3s = 180s)
     let retryCount = 0;
 
     while (retryCount < maxRetries) {
-      await delay(3000); // 等待3秒
+      await delay(3000); // Wait for 3 seconds
 
       try {
         const queryResponse = await fetch(`https://dashscope.aliyuncs.com/api/v1/tasks/${taskId}`, {
@@ -129,15 +135,14 @@ export async function tool({
         const queryData = await queryResponse.json();
         const taskStatus = queryData?.output?.task_status;
         if (taskStatus === TaskStatus.SUCCEEDED) {
-          // 任务成功，处理结果
+          // Task succeeded, process result
           const results = queryData?.output?.results || [];
-          const imageCount = queryData?.usage?.image_count || 0;
 
           const images = [];
 
           for (const result of results) {
             if (result.url) {
-              // 直接使用阿里云提供的图片URL
+              // Use the image URL provided by Aliyun directly
               images.push(result.url);
             }
           }
@@ -146,19 +151,19 @@ export async function tool({
             images
           };
         } else if (taskStatus === TaskStatus.FAILED) {
-          const errorMessage = queryData?.output?.message || '图像生成任务失败';
+          const errorMessage = queryData?.output?.message || 'Image generation task failed.';
           return {
             error: errorMessage
           };
         } else if (taskStatus === TaskStatus.CANCELED) {
           return {
-            error: '图像生成任务被取消'
+            error: 'Image generation task was canceled.'
           };
         }
-        // 任务还在进行中，继续轮询
+        // Task is still in progress, continue polling
       } catch (queryError) {
         return Promise.reject({
-          error: getErrText(queryError, '查询任务状态失败'),
+          error: getErrText(queryError, 'Failed to query task status.'),
           task_id: taskId,
           task_status: 'UNKNOWN'
         });
@@ -167,13 +172,13 @@ export async function tool({
       retryCount++;
     }
 
-    // 超时
+    // Timeout
     return {
-      error: '图像生成超时，请稍后重试'
+      error: 'Image generation timed out, please try again later.'
     };
   } catch (error: unknown) {
     return {
-      error: getErrText(error, 'FLUX文生图请求失败')
+      error: getErrText(error, 'FLUX text-to-image request failed.')
     };
   }
 }
