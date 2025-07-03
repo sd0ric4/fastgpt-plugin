@@ -44,7 +44,7 @@ export default defineTool({
       ],
       outputs: [
         {
-          valueType: WorkflowIOValueTypeEnum.string,
+          valueType: WorkflowIOValueTypeEnum.object,
           key: 'result',
           label: 'Http Response'
         }
