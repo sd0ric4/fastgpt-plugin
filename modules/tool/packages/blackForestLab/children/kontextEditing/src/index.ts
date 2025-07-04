@@ -14,7 +14,7 @@ async function imageToBase64(input: string): Promise<string> {
   try {
     const response = await fetch(input);
     if (!response.ok) {
-      throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+      return Promise.reject(`Failed to fetch image: ${response.status} ${response.statusText}`);
     }
 
     const arrayBuffer = await response.arrayBuffer();
@@ -28,7 +28,7 @@ async function imageToBase64(input: string): Promise<string> {
 
     return btoa(binary);
   } catch (error) {
-    throw new Error(
+    return Promise.reject(
       `Failed to process image URL: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
