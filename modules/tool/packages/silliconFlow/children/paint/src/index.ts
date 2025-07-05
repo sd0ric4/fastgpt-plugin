@@ -42,7 +42,15 @@ export const InputType = z
       .optional()
       .describe('Random seed for image generation, range 0-9999999999'),
     image: z
-      .union([z.string().url(), z.string().startsWith('data:image/')])
+      .union([
+        z.string().url(),
+        z.string().startsWith('data:image/'),
+        z
+          .string()
+          .length(0)
+          .transform(() => undefined),
+        z.undefined()
+      ])
       .optional()
       .describe(
         'Image to upload, supports image URL or base64 format, e.g., "https://xxx/xx.png" or "data:image/png;base64,XXX"'
