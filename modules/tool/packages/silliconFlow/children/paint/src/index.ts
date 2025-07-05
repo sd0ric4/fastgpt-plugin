@@ -1,3 +1,4 @@
+import { addLog } from '@/utils/log';
 import { z } from 'zod';
 
 export const InputType = z
@@ -41,9 +42,7 @@ export const InputType = z
       .optional()
       .describe('Random seed for image generation, range 0-9999999999'),
     image: z
-      .string()
-      .url()
-      .or(z.string().startsWith('data:image/'))
+      .union([z.string().url(), z.string().startsWith('data:image/')])
       .optional()
       .describe(
         'Image to upload, supports image URL or base64 format, e.g., "https://xxx/xx.png" or "data:image/png;base64,XXX"'
@@ -92,7 +91,6 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
   // url 直接硬编码
   const url = 'https://api.siliconflow.cn/v1/images/generations';
   const { authorization, ...params } = props;
-
   // image 字段自动转 base64
   const image = await (async () => {
     if (!params.image) return undefined;
