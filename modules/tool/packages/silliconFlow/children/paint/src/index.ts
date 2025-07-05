@@ -1,3 +1,4 @@
+import { addLog } from '@/utils/log';
 import { z } from 'zod';
 
 // Define input schema for the Silicon Flow painting API
@@ -66,7 +67,7 @@ export const OutputType = z.object({
     })
     .passthrough()
     .describe('Timing information for the inference process'),
-  seed: z.number().describe('Random seed for image generation')
+  seed: z.number().describe('Random seed for image generation').optional()
 });
 
 // Error status code mapping
@@ -131,7 +132,7 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
     },
     body: JSON.stringify(body)
   });
-
+  addLog.info(`[Silicon Flow] Request: ${url} - Body: ${JSON.stringify(body)}`);
   const data = await response.json();
 
   if (!response.ok) {
