@@ -1,3 +1,5 @@
+import { addLog } from '@/utils/log';
+import { add } from 'date-fns';
 import { z } from 'zod';
 
 // Define input schema for the Silicon Flow painting API
@@ -101,6 +103,7 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
   // Hardcoded API URL
   const url = 'https://api.siliconflow.cn/v1/images/generations';
   const { authorization, ...params } = props;
+  addLog.info(`Silicon Flow painting API request: ${JSON.stringify(params, null, 2)}`);
   // Automatically convert image field to base64
   const image = await (async () => {
     if (!params.image) return undefined;
@@ -120,7 +123,14 @@ export async function tool(props: z.infer<typeof InputType>): Promise<z.infer<ty
       negative_prompt: params.negative_prompt,
       seed: params.seed,
       image
-    }).filter(([, value]) => value !== undefined)
+    }).filter(([key, value]) => {
+      // for the 'seed' field, zero is a valid value, so we only filter out undefined
+      if (key === 'seed') {
+        return value !== undefined;
+      }
+      // For other fields, filter out undefined and empty strings
+      return value !== undefined && value !== '';
+    })
   );
 
   const response = await fetch(url, {
