@@ -48,8 +48,7 @@ export const InputType = z
         z
           .string()
           .length(0)
-          .transform(() => undefined),
-        z.undefined()
+          .transform(() => undefined)
       ])
       .optional()
       .describe(
